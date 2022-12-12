@@ -38,7 +38,7 @@ namespace MovieLibrary.Controllers
                 }
             }
 
-            return View(userList);
+            return View(userList.OrderByDescending(u => u.Role).ThenBy(u => u.Id).ToList());
 
         }
         [HttpGet]

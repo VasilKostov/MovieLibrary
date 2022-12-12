@@ -10,17 +10,17 @@ builder.Services.AddDbContext<ApplicationDbContext>(e =>
     e.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 builder.Services.AddControllersWithViews();
-//builder.Services.AddAuthentication()
-//    .AddFacebook(opt => 
-//    {
-//        opt.AppId = "test";
-//        opt.AppSecret = "test";
-//    })
-//    .AddGoogle(opt =>
-//    {
-//        opt.ClientId = "test";
-//        opt.ClientSecret = "test";
-//    });
+builder.Services.AddAuthentication()
+.AddFacebook(options =>
+{
+    options.AppId = "";
+    options.AppSecret = "";
+})
+.AddGoogle(options =>
+{
+    options.ClientId = "test";
+    options.ClientSecret = "test";
+});
 builder.Services.Configure<IdentityOptions>(opt =>
 {
     opt.Password.RequiredLength = 5;
