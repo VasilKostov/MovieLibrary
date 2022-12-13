@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MovieLibrary.Data;
 
@@ -11,9 +12,10 @@ using MovieLibrary.Data;
 namespace MovieLibrary.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221213150452_Comments")]
+    partial class Comments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -177,7 +179,7 @@ namespace MovieLibrary.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Actors", (string)null);
+                    b.ToTable("Actors");
                 });
 
             modelBuilder.Entity("MovieLibrary.Models.Actors.ActorAward", b =>
@@ -194,7 +196,7 @@ namespace MovieLibrary.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ActorAwards", (string)null);
+                    b.ToTable("ActorAwards");
                 });
 
             modelBuilder.Entity("MovieLibrary.Models.AppUser", b =>
@@ -311,7 +313,7 @@ namespace MovieLibrary.Migrations
 
                     b.HasIndex("ProducerId");
 
-                    b.ToTable("Movies", (string)null);
+                    b.ToTable("Movies");
                 });
 
             modelBuilder.Entity("MovieLibrary.Models.Movies.MovieAward", b =>
@@ -328,7 +330,7 @@ namespace MovieLibrary.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MovieAwards", (string)null);
+                    b.ToTable("MovieAwards");
                 });
 
             modelBuilder.Entity("MovieLibrary.Models.Movies.MovieCategory", b =>
@@ -345,7 +347,7 @@ namespace MovieLibrary.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MovieCategory", (string)null);
+                    b.ToTable("MovieCategory");
                 });
 
             modelBuilder.Entity("MovieLibrary.Models.Movies.MovieComment", b =>
@@ -373,7 +375,7 @@ namespace MovieLibrary.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("MovieComment", (string)null);
+                    b.ToTable("MovieComment");
                 });
 
             modelBuilder.Entity("MovieLibrary.Models.Movies.Producer", b =>
@@ -390,7 +392,7 @@ namespace MovieLibrary.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Producers", (string)null);
+                    b.ToTable("Producers");
                 });
 
             modelBuilder.Entity("MovieLibrary.Models.Relations.Actor_ActorAward", b =>
@@ -405,7 +407,7 @@ namespace MovieLibrary.Migrations
 
                     b.HasIndex("ActorAwardId");
 
-                    b.ToTable("Actor_ActorAwards", (string)null);
+                    b.ToTable("Actor_ActorAwards");
                 });
 
             modelBuilder.Entity("MovieLibrary.Models.Relations.Actor_Movie", b =>
@@ -420,7 +422,7 @@ namespace MovieLibrary.Migrations
 
                     b.HasIndex("MovieId");
 
-                    b.ToTable("Actors_Movies", (string)null);
+                    b.ToTable("Actors_Movies");
                 });
 
             modelBuilder.Entity("MovieLibrary.Models.Relations.Movie_MovieAward", b =>
@@ -435,7 +437,7 @@ namespace MovieLibrary.Migrations
 
                     b.HasIndex("MovieId");
 
-                    b.ToTable("Movie_MovieAward", (string)null);
+                    b.ToTable("Movie_MovieAward");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
