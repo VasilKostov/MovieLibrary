@@ -12,8 +12,8 @@ using MovieLibrary.Data;
 namespace MovieLibrary.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221213150452_Comments")]
-    partial class Comments
+    [Migration("20221216222518_moviecategoryenum")]
+    partial class moviecategoryenum
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -49,6 +49,29 @@ namespace MovieLibrary.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "341743f0 - asd2–42de - afbf - 59kmkkmk72cf6",
+                            ConcurrencyStamp = "341743f0 - asd2–42de - afbf - 59kmkkmk72cf6",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "a4e7ce7b-82d1-45c1-bb06-dfc83174d367",
+                            ConcurrencyStamp = "0b3ff91e-489c-47aa-8593-464ca3993ab4",
+                            Name = "Manager",
+                            NormalizedName = "MANAGER"
+                        },
+                        new
+                        {
+                            Id = "eba814e4-ebac-47d4-8450-0346a8d3de73",
+                            ConcurrencyStamp = "3f32be50-97a8-498a-acb0-18c532ebc85c",
+                            Name = "User",
+                            NormalizedName = "USER"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -136,6 +159,13 @@ namespace MovieLibrary.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "02174cf0–9412–4cfe - afbf - 59f706d72cf6",
+                            RoleId = "341743f0 - asd2–42de - afbf - 59kmkkmk72cf6"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -268,6 +298,26 @@ namespace MovieLibrary.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "02174cf0–9412–4cfe - afbf - 59f706d72cf6",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "0647977c-89e9-4cb5-9a9d-f417be3b08d3",
+                            Email = "admin@admin.bg",
+                            EmailConfirmed = false,
+                            FirstName = "Admin",
+                            LastName = "Admin",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "ADMIN@ADMIN.BG",
+                            NormalizedUserName = "ADMIN",
+                            PasswordHash = "AQAAAAEAACcQAAAAEPZdIc6eWSFkr11eAp67zBTd7UkhwrvtO7cb45OnZqHQoFSsBAiX1oXAP2ML9b9mKQ==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "7c8ec5a0-a517-4d97-8001-11998604bf67",
+                            TwoFactorEnabled = false,
+                            UserName = "Admin"
+                        });
                 });
 
             modelBuilder.Entity("MovieLibrary.Models.Movies.Movie", b =>
@@ -281,8 +331,9 @@ namespace MovieLibrary.Migrations
                     b.Property<decimal>("Budget")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -309,8 +360,6 @@ namespace MovieLibrary.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId");
-
                     b.HasIndex("ProducerId");
 
                     b.ToTable("Movies");
@@ -333,23 +382,6 @@ namespace MovieLibrary.Migrations
                     b.ToTable("MovieAwards");
                 });
 
-            modelBuilder.Entity("MovieLibrary.Models.Movies.MovieCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MovieCategory");
-                });
-
             modelBuilder.Entity("MovieLibrary.Models.Movies.MovieComment", b =>
                 {
                     b.Property<int>("Id")
@@ -357,6 +389,10 @@ namespace MovieLibrary.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("MovieId")
                         .HasColumnType("int");
@@ -367,13 +403,13 @@ namespace MovieLibrary.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MovieId");
+                    b.HasIndex("AppUserId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("MovieId");
 
                     b.ToTable("MovieComment");
                 });
@@ -493,34 +529,26 @@ namespace MovieLibrary.Migrations
 
             modelBuilder.Entity("MovieLibrary.Models.Movies.Movie", b =>
                 {
-                    b.HasOne("MovieLibrary.Models.Movies.MovieCategory", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("MovieLibrary.Models.Movies.Producer", "Producer")
                         .WithMany()
                         .HasForeignKey("ProducerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Category");
-
                     b.Navigation("Producer");
                 });
 
             modelBuilder.Entity("MovieLibrary.Models.Movies.MovieComment", b =>
                 {
-                    b.HasOne("MovieLibrary.Models.Movies.Movie", "Movie")
-                        .WithMany("CommentsOnMovies")
-                        .HasForeignKey("MovieId")
+                    b.HasOne("MovieLibrary.Models.AppUser", "AppUser")
+                        .WithMany()
+                        .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MovieLibrary.Models.AppUser", "AppUser")
-                        .WithMany("CommentsOnMovies")
-                        .HasForeignKey("UserId")
+                    b.HasOne("MovieLibrary.Models.Movies.Movie", "Movie")
+                        .WithMany("MovieComments")
+                        .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -598,16 +626,11 @@ namespace MovieLibrary.Migrations
                     b.Navigation("Actor_ActorAwards");
                 });
 
-            modelBuilder.Entity("MovieLibrary.Models.AppUser", b =>
-                {
-                    b.Navigation("CommentsOnMovies");
-                });
-
             modelBuilder.Entity("MovieLibrary.Models.Movies.Movie", b =>
                 {
                     b.Navigation("ActorsMovies");
 
-                    b.Navigation("CommentsOnMovies");
+                    b.Navigation("MovieComments");
 
                     b.Navigation("Movie_MovieAwards");
                 });

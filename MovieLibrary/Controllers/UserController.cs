@@ -7,7 +7,7 @@ using MovieLibrary.Models;
 
 namespace MovieLibrary.Controllers
 {
-    [Authorize(Roles="Admin")]
+    [Authorize(Roles ="Admin")]
     public class UserController : Controller
     {
         private readonly ApplicationDbContext _db;
@@ -24,7 +24,6 @@ namespace MovieLibrary.Controllers
             var userList = _db.AppUser.ToList();
             var userRole = _db.UserRoles.ToList();
             var roles = _db.Roles.ToList();
-            //set user to none to not make ui look terrible
             foreach (var user in userList)
             {
                 var role = userRole.FirstOrDefault(u => u.UserId == user.Id);

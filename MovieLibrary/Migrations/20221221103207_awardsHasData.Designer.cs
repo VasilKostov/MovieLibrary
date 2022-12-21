@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MovieLibrary.Data;
 
@@ -11,9 +12,10 @@ using MovieLibrary.Data;
 namespace MovieLibrary.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221221103207_awardsHasData")]
+    partial class awardsHasData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -58,15 +60,15 @@ namespace MovieLibrary.Migrations
                         },
                         new
                         {
-                            Id = "b7fb6598-8f66-4883-a236-2b60119732d5",
-                            ConcurrencyStamp = "22312641-8184-43d7-bb78-5285c5a24002",
+                            Id = "6a8b2193-3356-4f44-b552-316690acd3e6",
+                            ConcurrencyStamp = "f1b6d08a-6ee2-460d-ae84-5804816f966c",
                             Name = "Manager",
                             NormalizedName = "MANAGER"
                         },
                         new
                         {
-                            Id = "444e1128-4623-4620-97f6-0e094f29f8f1",
-                            ConcurrencyStamp = "f405e39e-7414-4ebc-8a7a-53c14038c8c6",
+                            Id = "e1670c99-ff74-4629-9842-b899171b4583",
+                            ConcurrencyStamp = "5c045050-e17e-4752-bcae-60c1a75fe6cb",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -329,7 +331,7 @@ namespace MovieLibrary.Migrations
                         {
                             Id = "02174cf0–9412–4cfe - afbf - 59f706d72cf6",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "ef3ef561-150d-4f30-be8a-1970921ba361",
+                            ConcurrencyStamp = "826c2aa3-479b-435f-b0b5-ae74e6e17c0a",
                             Email = "admin@admin.bg",
                             EmailConfirmed = false,
                             FirstName = "Admin",
@@ -337,9 +339,9 @@ namespace MovieLibrary.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@ADMIN.BG",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEMPrieZEuDZztHSH1ZspU7LsdpjKVjiZ7Ptw9Dn50/rrn8nDc4Qr5JQtY/GmaaIX7w==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEBBvtK+NDd3YlHcWSlDTLTcVLLSDC+OdTVFcrZCEpRnvIbVHqaiNgiVJkZpL/1PqUg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "1cc6a9ff-327d-4e88-a536-4cc43b129762",
+                            SecurityStamp = "86cc0915-9f5e-4f4c-baf3-ba80bb48664a",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });
@@ -465,6 +467,10 @@ namespace MovieLibrary.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

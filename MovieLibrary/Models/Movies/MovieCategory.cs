@@ -1,18 +1,15 @@
 ﻿namespace MovieLibrary.Models.Movies
 {
-    public class MovieCategory
+    public enum MovieCategory
     {
-        //enum
-        //Action,
-        //Comedy,
-        //Drama,
-        //Fantasy,
-        //Horror,
-        //Mystery,
-        //Romance,
-        //Thriller,
-        //Western
-        public int Id { get; set; }
-        public string Category { get; set; }
+        Action,
+        Comedy,
+        Drama,
+        Fantasy,
+        Horror,
+        Mystery,
+        Romance,
+        Thriller,
+        Western
     }
 }

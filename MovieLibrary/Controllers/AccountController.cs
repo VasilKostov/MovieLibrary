@@ -7,14 +7,13 @@ using Microsoft.AspNetCore.Authorization;
 using MovieLibrary.Migrations;
 using System.Security.Claims;
 
-namespace IdentityAppCourse2022.Controllers
+namespace MovieLibrary.Controllers
 {
     public class AccountController : Controller
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private List<AppUser> adminList = new List<AppUser>();
 
         public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, RoleManager<IdentityRole> roleManager)
         {
@@ -73,22 +72,6 @@ namespace IdentityAppCourse2022.Controllers
         [HttpGet]
         public async Task<IActionResult> Register(string? returnUrl = null)
         {
-            if (!await _roleManager.RoleExistsAsync("User"))
-            {
-                await _roleManager.CreateAsync(new IdentityRole("User"));
-                await _roleManager.CreateAsync(new IdentityRole("Manager"));
-                await _roleManager.CreateAsync(new IdentityRole("Admin"));
-            }
-            var admin = new AppUser
-            {
-                Email = "admin1@gmail.com",
-                UserName = "admin1",
-                FirstName = "Glavniq",
-                LastName = "Iliev"
-            };
-            var adminresult = await _userManager.CreateAsync(admin, "Admin!11");
-            await _userManager.AddToRoleAsync(admin, "Admin");
-            adminList.Add(admin);
             RegisterViewModel registerViewModel = new RegisterViewModel();
             registerViewModel.ReturnUrl = returnUrl;
             return View(registerViewModel);
@@ -185,12 +168,9 @@ namespace IdentityAppCourse2022.Controllers
                 ViewData["ReturnUrl"] = returnurl;
                 ViewData["ProviderDisplayName"] = info.ProviderDisplayName;
                 var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-                //var firstName = info.Principal.FindFirstValue(ClaimTypes.Name.ToString());
-                //var lastName = info.Principal.FindFirstValue(ClaimTypes.GivenName);
                 return View("ExternalLoginConfirmation", new ExternalLoginViewModel
                 {
                     Email = email
-                    //, FirstName = firstName, LastName = firstName
                 });
 
             }

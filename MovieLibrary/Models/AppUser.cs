@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MovieLibrary.Models.Movies;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MovieLibrary.Models
@@ -16,13 +17,13 @@ namespace MovieLibrary.Models
         [NotMapped]
         public IEnumerable<SelectListItem>? RoleList { get; set; }
         [NotMapped]
-        public List<MovieComment>? CommentsOnMovies{ get; set; }
+        public ICollection<MovieComment>? MovieComments { get; set; }
 
         //public string Country { get; set; }
         //public string FavouriteGenre { get; set; }
 
         //Is not get; set; change it!!
-        
+
 
         //public List<Movies> PostedMovies { get; set; }
     }

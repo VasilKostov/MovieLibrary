@@ -12,8 +12,8 @@ using MovieLibrary.Data;
 namespace MovieLibrary.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221212200913_ConnectionWithAppUser")]
-    partial class ConnectionWithAppUser
+    [Migration("20221216214834_adminrolefix")]
+    partial class adminrolefix
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -49,6 +49,29 @@ namespace MovieLibrary.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "341743f0 - asd2–42de - afbf - 59kmkkmk72cf6",
+                            ConcurrencyStamp = "341743f0 - asd2–42de - afbf - 59kmkkmk72cf6",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "7ab07d6e-87d0-4ab3-8639-1c2130e69c30",
+                            ConcurrencyStamp = "2f31ea14-83b6-43e1-8403-6947684ca884",
+                            Name = "Manager",
+                            NormalizedName = "MANAGER"
+                        },
+                        new
+                        {
+                            Id = "e77f804f-4d91-4d3b-8cc9-a4455cee03ad",
+                            ConcurrencyStamp = "b33b4a29-1678-428f-a5c8-e1cd7da179f1",
+                            Name = "User",
+                            NormalizedName = "USER"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -136,6 +159,13 @@ namespace MovieLibrary.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "02174cf0–9412–4cfe - afbf - 59f706d72cf6",
+                            RoleId = "341743f0 - asd2–42de - afbf - 59kmkkmk72cf6"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -173,8 +203,9 @@ namespace MovieLibrary.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("LastName")
-                        .HasColumnType("int");
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -267,6 +298,26 @@ namespace MovieLibrary.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "02174cf0–9412–4cfe - afbf - 59f706d72cf6",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "800125bb-0a8b-44fb-b720-948f6d970d49",
+                            Email = "admin@admin.bg",
+                            EmailConfirmed = false,
+                            FirstName = "Admin",
+                            LastName = "Admin",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "ADMIN@ADMIN.BG",
+                            NormalizedUserName = "ADMIN",
+                            PasswordHash = "AQAAAAEAACcQAAAAEC7xHMCJkIA4J8Ag+XXnZC1fjDFL0GnQW5r1iZpccW1qWZnGagbvl0TF32MWyIyTmQ==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "835c1383-b4fe-48cd-a54f-bfdea09e0dc8",
+                            TwoFactorEnabled = false,
+                            UserName = "Admin"
+                        });
                 });
 
             modelBuilder.Entity("MovieLibrary.Models.Movies.Movie", b =>
@@ -280,7 +331,7 @@ namespace MovieLibrary.Migrations
                     b.Property<decimal>("Budget")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("CategoriesId")
+                    b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
@@ -308,7 +359,7 @@ namespace MovieLibrary.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoriesId");
+                    b.HasIndex("CategoryId");
 
                     b.HasIndex("ProducerId");
 
@@ -357,6 +408,10 @@ namespace MovieLibrary.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("MovieId")
                         .HasColumnType("int");
 
@@ -366,13 +421,13 @@ namespace MovieLibrary.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MovieId");
+                    b.HasIndex("AppUserId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("MovieId");
 
                     b.ToTable("MovieComment");
                 });
@@ -492,9 +547,9 @@ namespace MovieLibrary.Migrations
 
             modelBuilder.Entity("MovieLibrary.Models.Movies.Movie", b =>
                 {
-                    b.HasOne("MovieLibrary.Models.Movies.MovieCategory", "Categories")
+                    b.HasOne("MovieLibrary.Models.Movies.MovieCategory", "Category")
                         .WithMany()
-                        .HasForeignKey("CategoriesId")
+                        .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -504,22 +559,22 @@ namespace MovieLibrary.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Categories");
+                    b.Navigation("Category");
 
                     b.Navigation("Producer");
                 });
 
             modelBuilder.Entity("MovieLibrary.Models.Movies.MovieComment", b =>
                 {
-                    b.HasOne("MovieLibrary.Models.Movies.Movie", "Movie")
-                        .WithMany("Comments")
-                        .HasForeignKey("MovieId")
+                    b.HasOne("MovieLibrary.Models.AppUser", "AppUser")
+                        .WithMany("MovieComments")
+                        .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MovieLibrary.Models.AppUser", "AppUser")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                    b.HasOne("MovieLibrary.Models.Movies.Movie", "Movie")
+                        .WithMany("MovieComments")
+                        .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -597,11 +652,16 @@ namespace MovieLibrary.Migrations
                     b.Navigation("Actor_ActorAwards");
                 });
 
+            modelBuilder.Entity("MovieLibrary.Models.AppUser", b =>
+                {
+                    b.Navigation("MovieComments");
+                });
+
             modelBuilder.Entity("MovieLibrary.Models.Movies.Movie", b =>
                 {
                     b.Navigation("ActorsMovies");
 
-                    b.Navigation("Comments");
+                    b.Navigation("MovieComments");
 
                     b.Navigation("Movie_MovieAwards");
                 });
