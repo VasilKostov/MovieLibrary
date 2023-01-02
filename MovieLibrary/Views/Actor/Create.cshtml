@@ -1,0 +1,58 @@
+﻿@using MovieLibrary.Models.Actors
+@using MovieLibrary.ViewModels.ActorViewModels
+@model CreateActorViewModel
+<h1>Actor</h1>
+<h4>Add an new actor</h4>
+<hr />
+<div>
+    <form asp-controller="Actor" asp-action="Create">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="FirstName" class="col-md-2"></label>
+            <div class="col-md-10">
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="LastName" class="col-md-2"></label>
+            <div class="col-md-10">
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Gender" class="col-md-2"></label>
+            <select asp-for="Gender" class=" form-control" asp-items="Html.GetEnumSelectList<ActorGender>()">
+                <option disabled selected>Choose actor's gender</option>
+            </select>
+            <span asp-validation-for="Gender" class="text-danger"></span>
+        </div>
+        <link href="~/multiselect/example-styles.css" rel="stylesheet" />
+        <div class="container">
+            <div class="card">
+                <div class="card-text text-center">
+                    <h1>Multi Dropdownlist for actor's awards</h1>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <select id="dropDownList-example" name="SelectedActorAwardsIds"
+                                    asp-items="@Model.AllActorAwards" multiple class="form-control"></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="submit" value="Save" class="btn btn-primary" />
+        @section Scripts{
+            <script src="~/multiselect/jquery.multi-select.js"></script>
+            <script>
+                $(document).ready(function () {
+                    $('#dropDownList-example').multiSelect();
+                });
+            </script>
+
+        }
+    </form>
+</div>

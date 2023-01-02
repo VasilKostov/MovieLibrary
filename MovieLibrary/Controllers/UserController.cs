@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MovieLibrary.Data;
 using MovieLibrary.Models;
+using NuGet.Protocol;
 
 namespace MovieLibrary.Controllers
 {
@@ -24,6 +25,7 @@ namespace MovieLibrary.Controllers
             var userList = _db.AppUser.ToList();
             var userRole = _db.UserRoles.ToList();
             var roles = _db.Roles.ToList();
+            //Delete(now all of the new registered users will have a role)
             foreach (var user in userList)
             {
                 var role = userRole.FirstOrDefault(u => u.UserId == user.Id);
@@ -79,7 +81,6 @@ namespace MovieLibrary.Controllers
                 {
                     var previousRoleName = _db.Roles.Where(u => u.Id == userRole.RoleId).Select(e => e.Name).FirstOrDefault();
                     await _userManager.RemoveFromRoleAsync(userDbValue, previousRoleName);
-
                 }
 
                 await _userManager.AddToRoleAsync(userDbValue, _db.Roles.FirstOrDefault(u => u.Id == user.RoleId).Name);
@@ -95,7 +96,6 @@ namespace MovieLibrary.Controllers
             });
             return View(user);
         }
-
 
         [HttpPost]
         public IActionResult Delete(string userId)

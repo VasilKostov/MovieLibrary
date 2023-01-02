@@ -8,6 +8,7 @@ using System.Reflection.Emit;
 using MovieLibrary.Models.Movies;
 using MovieLibrary.Models.Relations;
 using MovieLibrary.Models.Actors;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace MovieLibrary.Data
 {
@@ -27,7 +28,8 @@ namespace MovieLibrary.Data
         public List<MovieLanguage> MovieLanguages { get; set; }
         public List<MovieComment> MovieComments { get; set; }
         public DbSet<Actor_Movie> Actors_Movies { get; set; }
-        public List<Movie_MovieAward> Movie_MovieAwards { get; set; }
+        public DbSet<Movie_MovieAward> Movie_MovieAwards { get; set; }
+        //public ICollection<Movie_MovieAward> Movie_MovieAwards { get; set; }
         public DbSet<MovieAward> MovieAwards { get; set; }
         public DbSet<Producer> Producers { get; set; }
 
@@ -66,6 +68,12 @@ namespace MovieLibrary.Data
                 UserId = ADMIN_ID
             });
 
+            builder.Entity<Actor>().HasData(
+                new Actor { Id = 1, FirstName = "Margot", LastName = "Robbie", AppUserId = ADMIN_ID,Gender=ActorGender.Female});
+            builder.Entity<Actor_ActorAward>().HasData(new Actor_ActorAward { ActorAwardId = 1,ActorId = 1 });
+
+            builder.Entity<Producer>().HasData(new Producer { Id = 1, Name = "Quentin Tarantino" });
+
             builder.Entity<MovieAward>().HasData(
                 new MovieAward { Id = 1, Name = "Emmy" },
                 new MovieAward { Id = 2, Name = "Golden Globe" },
@@ -86,6 +94,8 @@ namespace MovieLibrary.Data
             builder.Entity<Movie>().Property(m => m.Category).HasConversion(c => c.ToString(), c => (MovieCategory)Enum.Parse(typeof(MovieCategory), c));
             builder.Entity<Actor>().Property(m => m.Gender).HasConversion(g => g.ToString(), g => (ActorGender)Enum.Parse(typeof(ActorGender), g));
 
+            builder.Entity<AppUser>().HasMany(c => c.Movies).WithOne(e => e.AppUser);
+            builder.Entity<AppUser>().HasMany(c => c.Actors).WithOne(e => e.AppUser);
 
             builder.Entity<Actor_Movie>().HasKey(am => new { am.ActorId, am.MovieId });
             builder.Entity<Actor_Movie>().HasOne(m => m.Movie).WithMany(am => am.ActorsMovies);

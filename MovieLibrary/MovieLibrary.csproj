@@ -24,4 +24,10 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.10" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ViewModels\MovieViewModels\UpdateMovie\" />
+    <Folder Include="ViewModels\MovieViewModels\DeleteMovie\" />
+    <Folder Include="ViewModels\MovieViewModels\ReadMovie\" />
+  </ItemGroup>
+
 </Project>

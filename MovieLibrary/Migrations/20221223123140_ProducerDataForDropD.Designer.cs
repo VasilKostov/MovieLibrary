@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MovieLibrary.Data;
 
@@ -11,9 +12,10 @@ using MovieLibrary.Data;
 namespace MovieLibrary.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221223123140_ProducerDataForDropD")]
+    partial class ProducerDataForDropD
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -58,15 +60,15 @@ namespace MovieLibrary.Migrations
                         },
                         new
                         {
-                            Id = "0fe6777e-a0c1-450a-b71d-ae39fd7c20e3",
-                            ConcurrencyStamp = "628c123d-6581-422f-949d-f63a819d8fab",
+                            Id = "77513a54-3fd6-4545-a880-4c78bf885dab",
+                            ConcurrencyStamp = "149bdfc9-f683-49bc-b27a-3f2dfbf23c15",
                             Name = "Manager",
                             NormalizedName = "MANAGER"
                         },
                         new
                         {
-                            Id = "751b60ef-a2e6-4aeb-ae27-0f7cd13c2174",
-                            ConcurrencyStamp = "5bf3e5e7-b57f-4916-b452-8b182f325edd",
+                            Id = "97b1fd47-a32d-461c-992e-ccdacf2a29a1",
+                            ConcurrencyStamp = "f09e71d5-63ad-4f7f-b505-0ed46c120080",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -212,17 +214,7 @@ namespace MovieLibrary.Migrations
 
                     b.HasIndex("AppUserId");
 
-                    b.ToTable("Actors", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AppUserId = "02174cf0–9412–4cfe - afbf - 59f706d72cf6",
-                            FirstName = "Margot",
-                            Gender = "Female",
-                            LastName = "Robbie"
-                        });
+                    b.ToTable("Actors");
                 });
 
             modelBuilder.Entity("MovieLibrary.Models.Actors.ActorAward", b =>
@@ -239,7 +231,7 @@ namespace MovieLibrary.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ActorAwards", (string)null);
+                    b.ToTable("ActorAwards");
 
                     b.HasData(
                         new
@@ -344,7 +336,7 @@ namespace MovieLibrary.Migrations
                         {
                             Id = "02174cf0–9412–4cfe - afbf - 59f706d72cf6",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "e3ef66c6-5180-4577-ae2a-e44e3cc2f29d",
+                            ConcurrencyStamp = "82326595-94f6-422c-a63c-6ebed9871132",
                             Email = "admin@admin.bg",
                             EmailConfirmed = false,
                             FirstName = "Admin",
@@ -352,9 +344,9 @@ namespace MovieLibrary.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@ADMIN.BG",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEJh9i/Czx2G3O4jHx4X7hha3G00Lu7G5og+nzsuxdYNeJqO0LnC2rbowEnS8Wt5B2Q==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEL3esY89+dE8JvSdjsoDiM46YLTVS4dOacTDSduTEmokyUEos4mSEI08x+RK42dU3g==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "94792170-56b0-4acf-8adc-b7357a4e1894",
+                            SecurityStamp = "817035d2-8fe2-40d9-a8ad-883bd3c3d821",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });
@@ -367,9 +359,6 @@ namespace MovieLibrary.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("AppUserEmail")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("AppUserId")
                         .HasColumnType("nvarchar(450)");
@@ -410,7 +399,7 @@ namespace MovieLibrary.Migrations
 
                     b.HasIndex("ProducerId");
 
-                    b.ToTable("Movies", (string)null);
+                    b.ToTable("Movies");
                 });
 
             modelBuilder.Entity("MovieLibrary.Models.Movies.MovieAward", b =>
@@ -427,7 +416,7 @@ namespace MovieLibrary.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MovieAwards", (string)null);
+                    b.ToTable("MovieAwards");
 
                     b.HasData(
                         new
@@ -497,7 +486,7 @@ namespace MovieLibrary.Migrations
 
                     b.HasIndex("MovieId");
 
-                    b.ToTable("MovieComment", (string)null);
+                    b.ToTable("MovieComment");
                 });
 
             modelBuilder.Entity("MovieLibrary.Models.Movies.Producer", b =>
@@ -514,7 +503,7 @@ namespace MovieLibrary.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Producers", (string)null);
+                    b.ToTable("Producers");
 
                     b.HasData(
                         new
@@ -536,14 +525,7 @@ namespace MovieLibrary.Migrations
 
                     b.HasIndex("ActorAwardId");
 
-                    b.ToTable("Actor_ActorAwards", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            ActorId = 1,
-                            ActorAwardId = 1
-                        });
+                    b.ToTable("Actor_ActorAwards");
                 });
 
             modelBuilder.Entity("MovieLibrary.Models.Relations.Actor_Movie", b =>
@@ -558,7 +540,7 @@ namespace MovieLibrary.Migrations
 
                     b.HasIndex("MovieId");
 
-                    b.ToTable("Actors_Movies", (string)null);
+                    b.ToTable("Actors_Movies");
                 });
 
             modelBuilder.Entity("MovieLibrary.Models.Relations.Movie_MovieAward", b =>
@@ -573,7 +555,7 @@ namespace MovieLibrary.Migrations
 
                     b.HasIndex("MovieId");
 
-                    b.ToTable("Movie_MovieAwards", (string)null);
+                    b.ToTable("Movie_MovieAward");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
