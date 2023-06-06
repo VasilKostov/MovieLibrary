@@ -26,10 +26,11 @@ namespace MovieLibrary.Data
         public MovieCategory MovieCategories { get; set; }
         public List<MovieCountry> MovieCountries { get; set; }
         public List<MovieLanguage> MovieLanguages { get; set; }
-        public List<MovieComment> MovieComments { get; set; }
+        public DbSet<MovieComment> MovieComments { get; set; }
         public DbSet<Actor_Movie> Actors_Movies { get; set; }
         public DbSet<Movie_MovieAward> Movie_MovieAwards { get; set; }
-        //public ICollection<Movie_MovieAward> Movie_MovieAwards { get; set; }
+        public DbSet<Favourite> Favourites { get; set; }
+        public DbSet<BucketList> BucketLists { get; set; }
         public DbSet<MovieAward> MovieAwards { get; set; }
         public DbSet<Producer> Producers { get; set; }
 
@@ -59,8 +60,10 @@ namespace MovieLibrary.Data
                 Email = "admin@admin.bg",
                 NormalizedEmail = "ADMIN@ADMIN.BG",
                 Role = "Admin",
+                Age = 30,
                 PasswordHash = hasher.HashPassword(null, "Admin123#")
             });
+
 
             builder.Entity<IdentityUserRole<string>>().HasData(new IdentityUserRole<string>
             {
@@ -69,10 +72,18 @@ namespace MovieLibrary.Data
             });
 
             builder.Entity<Actor>().HasData(
-                new Actor { Id = 1, FirstName = "Margot", LastName = "Robbie", AppUserId = ADMIN_ID,Gender=ActorGender.Female});
-            builder.Entity<Actor_ActorAward>().HasData(new Actor_ActorAward { ActorAwardId = 1,ActorId = 1 });
+                new Actor { Id = 1, FirstName = "Margot", LastName = "Robbie", AppUserId = ADMIN_ID, Gender = ActorGender.Female });
+            builder.Entity<Actor_ActorAward>().HasData(new Actor_ActorAward { ActorAwardId = 1, ActorId = 1 });
 
-            builder.Entity<Producer>().HasData(new Producer { Id = 1, Name = "Quentin Tarantino" });
+            builder.Entity<Producer>().HasData(
+                new Producer { Id = 1, Name = "Quentin Tarantino" },
+                new Producer { Id = 2, Name = "Michael Mann" },
+                new Producer { Id = 3, Name = "Steven Spielberg" },
+                new Producer { Id = 4, Name = "Jerry Bruckheimer" },
+                new Producer { Id = 5, Name = "Spike LeeSpike Lee" },
+                new Producer { Id = 6, Name = "Irwin Winkler" },
+                new Producer { Id = 7, Name = "Dana Brunetti" },
+                new Producer { Id = 8, Name = "Kathleen Kennedy" });
 
             builder.Entity<MovieAward>().HasData(
                 new MovieAward { Id = 1, Name = "Emmy" },
@@ -108,6 +119,16 @@ namespace MovieLibrary.Data
             builder.Entity<Movie_MovieAward>().HasKey(am => new { am.MovieAwardId, am.MovieId });
             builder.Entity<Movie_MovieAward>().HasOne(m => m.Movie).WithMany(am => am.Movie_MovieAwards);
             builder.Entity<Movie_MovieAward>().HasOne(a => a.MovieAward).WithMany(am => am.Movie_MovieAwards);
+
+            builder.Entity<BucketList>().HasKey(am => new { am.AppUserId, am.MovieId });
+            builder.Entity<BucketList>().HasOne(m => m.Movie).WithMany(am => am.BucketLists);
+            builder.Entity<BucketList>().HasOne(a => a.AppUser).WithMany(am => am.BucketLists);
+
+            builder.Entity<Favourite>().HasKey(am => new { am.AppUserId, am.MovieId });
+            builder.Entity<Favourite>().HasOne(m => m.Movie).WithMany(am => am.Favourites);
+            builder.Entity<Favourite>().HasOne(a => a.AppUser).WithMany(am => am.Favourites);
+
+            builder.Entity<MovieComment>().HasData(new MovieComment {Id = 4, MovieId = 1, AppUserId = "02174cf0–9412–4cfe - afbf - 59f706d72cf6", Text = "Probvam sys Seed" });
         }
     }
 }

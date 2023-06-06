@@ -1,0 +1,16 @@
+﻿@model IEnumerable<MovieLibrary.Models.Movies.Movie>
+
+
+<div class="text-center">
+    <a asp-action="ConvertBucketListToPDf">Dowload</a>
+</div>
+@foreach (var movie in Model)
+{
+    <div class="container">
+        <img src="@movie.PosterSource" asp-append-version="true" />
+        @movie.Title
+        @movie.Category
+        @movie.ReleaseDate
+        @movie.MinimumAge
+    </div>
+}

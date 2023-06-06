@@ -1,0 +1,11 @@
+﻿@model IEnumerable<MovieLibrary.Models.Movies.Movie>
+@foreach (var movie in Model)
+{
+    <div class="container">
+        <img src="@movie.PosterSource" asp-append-version="true" />
+        @movie.Title
+        @movie.Category
+        @movie.ReleaseDate
+        @movie.MinimumAge
+    </div>
+}

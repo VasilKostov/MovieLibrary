@@ -1,0 +1,285 @@
+﻿@using MovieLibrary.ViewModels
+@model ProfilePageViewModel
+@*
+<div>
+    <img src="@Model.ProfileImageUrl" asp-append-version="true" />
+    <!-- Trigger/Open The Modal -->
+    <button id="myBtn">Open Modal</button>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>Choose another photo</p>
+            <p>If u do not upload a file your profile picture will be changed with a default one</p>
+            <form asp-controller="Account" asp-action="ChangeProfilePicture" method="post" role="form" enctype="multipart/form-data">
+                <input asp-for="NewProfilePicture" type="file" class="form-control">
+                <button type="submit">Change</button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<div>
+    <!-- Trigger/Open The Modal -->
+    <button id="myBtn">Open Modal 2</button>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="row">
+                <div class="col-md-12">
+                    <form method="post">
+                        <div asp-validation-summary="All" class="text-danger"></div>
+                        <div class="form-group">
+                            <label asp-for="CurrentPassword"></label>
+                            <input asp-for="CurrentPassword" class="form-control" />
+                            <span asp-validation-for="CurrentPassword" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="NewPassword"></label>
+                            <input asp-for="NewPassword" class="form-control" />
+                            <span asp-validation-for="NewPassword" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ConfirmPassword"></label>
+                            <input asp-for="ConfirmPassword" class="form-control" />
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>*@
+
+@*<script>
+    // Get the modal
+    var modal = document.getElementById("myModal");
+    // Get the button that opens the modal
+    var btn = document.getElementById("myBtn");
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+    // When the user clicks on the button, open the modal
+    btn.onclick = function () {
+        modal.style.display = "block";
+    }
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function () {
+        modal.style.display = "none";
+    }
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>*@
+<head>
+    <link rel="stylesheet" href="~/css/profile.css  " type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://kit.fontawesome.com/9c0d45803b.js" crossorigin="anonymous"></script>
+    <title>Profile</title>
+</head>
+<body>
+    <h1>Your Profile</h1>
+    <div class="container">
+        <div>
+            <img class="profile" src="@Model.ProfileImageUrl" asp-append-version="true" />
+        </div>
+        <div class="text">
+            <h4>Email : @Model.Email </h4>
+            <h4>Username : @Model.Username, @Model.Age years of age </h4>
+            <div style="padding-top: 10px; align-content:center;">
+                <!-- Trigger/Open The Modal -->
+                <button class="modal-button" href="#myModal1">Change profile picture</button>
+                <!-- The Modal -->
+                <div id="myModal1" class="modal">
+                    <!-- Modal content -->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <span class="close">×</span>
+                            <h2>Choose another photo</h2>
+                        </div>
+                        <div class="modal-body">
+                            <br />
+                            <p>If u do not upload a file your profile picture will be changed with a default one. Also, the file must not be above 5 MB</p>
+                            <form asp-controller="Account" asp-action="ChangeProfilePicture" method="post" role="form" enctype="multipart/form-data">
+                                @Html.ValidationMessageFor(m => m.NewProfilePicture, "", new { @class = "text-danger" })
+                                <input asp-for="NewProfilePicture" type="file" class="form-control" placeholder="Profile picture" style="margin-top:30px">
+                                @*<input asp-for="NewProfilePicture" id="fileUpload" type="file" class="form-control">*@
+                                <br />
+                                <button class="btn" type="submit">Change</button>
+                            </form>
+                            <br />
+                        </div>
+                        <div class="modal-footer">
+                            <h3>MovieLibrary</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+            @if (Model.CurrentPassword != null)
+            {
+                <!-- Trigger/Open The Modal -->
+                <button class="modal-button" href="#myModal2">Change password</button>
+                <!-- The Modal -->
+                <div id="myModal2" class="modal">
+                    <!-- Modal content -->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <span class="close">×</span>
+                            <h2>Change password</h2>
+                        </div>
+                        <div class="modal-body">
+                            <form asp-controller="Account" asp-action="ChangePassword" method="post" role="form">
+                                <div asp-validation-summary="All" class="text-danger"></div>
+                                <p>If you write anything wrong the window will close and the password won't be changed!</p>
+                                <br />
+                                <div class="form-group">
+                                    <label asp-for="CurrentPassword"></label>
+                                    <input asp-for="CurrentPassword" class="form-control" />
+                                    <span asp-validation-for="CurrentPassword" class="text-danger"></span>
+                                </div>
+                                <br />
+                                <div class="form-group">
+                                    <label asp-for="NewPassword"></label>
+                                    <input asp-for="NewPassword" class="form-control" />
+                                    <span asp-validation-for="NewPassword" class="text-danger"></span>
+                                </div>
+                                <br />
+                                <div class="form-group">
+                                    <label asp-for="ConfirmPassword"></label>
+                                    <input asp-for="ConfirmPassword" class="form-control" />
+                                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                                </div>
+                                <br />
+                                <button type="submit" class="btn">Update</button>
+                            </form>
+                            <br />
+                        </div>
+                        <div class="modal-footer">
+                            <h3>MovieLibrary</h3>
+                        </div>
+
+
+
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <br />
+    <div>
+        <h5>Created movies: @Model.CreatedMovies.Count()</h5>
+        <br />
+        @if (Model.CreatedMovies.Count() > 0)
+        {
+            <table class="table table-striped border">
+                <tr style="background-color: #FF4B2B;">
+                    <th>Poster</th>
+                    <th>
+                        Title
+                    </th>
+                    <th>Avg. rating</th>
+                    <th></th>
+                </tr>
+                @foreach (var movie in Model.CreatedMovies)
+                {
+                    <tr>
+                        <td>
+                            <img class="poster" src="@movie.PosterSource" asp-append-version="true" />
+                        </td>
+                        <td>
+                            @movie.Title
+                        </td>
+                        <td>
+                            @movie.Rating
+                        </td>
+                        <td>
+                            <a asp-controller="Movie" asp-action="MovieDetails" asp-route-movieId="@movie.Id" class="btn">View movie</a>
+                        </td>
+                    </tr>
+                }
+            </table>
+        }
+    </div>
+    <br />
+    <div>
+        <h5>Written comments: @Model.Comments.Count()</h5>
+        <br />
+        @if (Model.Comments.Count() > 0)
+        {
+            <table class="table table-striped border">
+                <tr style="background-color: #FF4B2B;">
+                    <th>
+                        Comment
+                    </th>
+                    <th>
+                        Date
+                    </th>
+                    <th></th>
+                </tr>
+                @foreach (var comment in Model.Comments)
+                {
+                    <tr>
+                        <td>
+                            @comment.Text
+                        </td>
+                        <td>
+                            @comment.PostedTime.ToShortDateString() @comment.PostedTime.ToShortTimeString()
+                        </td>
+                        <td>
+                            <a asp-controller="Movie" asp-action="MovieDetails" asp-route-movieId="@comment.MovieId" class="btn">View comment</a>
+                        </td>
+                    </tr>
+                }
+            </table>
+        }
+    </div>
+</body>
+<script>
+    // Get the button that opens the modal
+    var btn = document.querySelectorAll("button.modal-button");
+
+    // All page modals
+    var modals = document.querySelectorAll('.modal');
+
+    // Get the <span> element that closes the modal
+    var spans = document.getElementsByClassName("close");
+
+    // When the user clicks the button, open the modal
+    for (var i = 0; i < btn.length; i++) {
+        btn[i].onclick = function (e) {
+            e.preventDefault();
+            modal = document.querySelector(e.target.getAttribute("href"));
+            modal.style.display = "block";
+        }
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    for (var i = 0; i < spans.length; i++) {
+        spans[i].onclick = function () {
+            for (var index in modals) {
+                if (typeof modals[index].style !== 'undefined') modals[index].style.display = "none";
+            }
+        }
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function (event) {
+        if (event.target.classList.contains('modal')) {
+            for (var index in modals) {
+                if (typeof modals[index].style !== 'undefined') modals[index].style.display = "none";
+            }
+        }
+    }
+</script>

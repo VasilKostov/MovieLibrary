@@ -1,17 +1,24 @@
 ﻿@using MovieLibrary.Models.Movies
-@using MovieLibrary.ViewModels.MovieViewModels.CreateMovie
+@using MovieLibrary.ViewModels.MovieViewModels
 @model CreateMovieViewModel
 <h1>Movie</h1>
 <h4>Add a movie</h4>
 <hr />
 <div>
-    <form asp-controller="Movie" asp-action="Create">
+    <form asp-controller="Movie" asp-action="Create" method="post" role="form" enctype="multipart/form-data">
         <div asp-validation-summary="All" class="text-danger"></div>
         <div class="form-group">
             <label asp-for="Title" class="col-md-2"></label>
             <div class="col-md-10">
                 <input asp-for="Title" class="form-control" />
                 <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="YoutubeUrl" class="col-md-2"></label>
+            <div class="col-md-10">
+                <input asp-for="YoutubeUrl" class="form-control" />
+                <span asp-validation-for="YoutubeUrl" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
@@ -65,11 +72,20 @@
                     <div class="row">
                         <div class="col">
                             <select id="dropDownList-example" name="SelectedMovieActorsIds"
-                                    asp-items="@Model.AllMovieActors" 
+                                    asp-items="@Model.AllMovieActors"
                                     multiple class="form-control"></select>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(x => Model.SelectedMovieAwardsIds, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-5">
+                @Html.DropDownListFor(x => Model.SelectedMovieAwardsIds,
+                    new SelectList(Model.AllMovieAwards, "Value", "Text"), htmlAttributes: new { @class = "form-control", id = "Country",  multiple =
+                "multiple" })
+                @Html.ValidationMessageFor(x => x.SelectedMovieAwardsIds, "", new { @class = "text-danger" })
             </div>
         </div>
         <div class="container">
@@ -85,9 +101,13 @@
                         </div>
                     </div>
                 </div>
-                <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </div>
+        <div>
+            <p>Choose a poster for the movie</p>
+            <input asp-for="Poster" type="file" class="form-control">
+        </div>
+        <input type="submit" value="Save" class="btn btn-primary" />
 
         @section Scripts{
             <script src="~/multiselect/jquery.multi-select.js"></script>

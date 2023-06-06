@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace MovieLibrary.ViewModels.MovieViewModels.CreateMovie
+namespace MovieLibrary.ViewModels.MovieViewModels
 {
     public class AwardsMovieDropDownViewModel
     {

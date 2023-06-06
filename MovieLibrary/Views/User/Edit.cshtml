@@ -5,6 +5,8 @@
     <div class="col-md-8">
         <form method="post" asp-action="Edit">
             <input asp-for="@Model.Id" hidden />
+            <input asp-for="@Model.FirstName" hidden />
+            <input asp-for="@Model.LastName" hidden />
             <hr />
             <div asp-validation-summary="All" class="text-danger"></div>
 

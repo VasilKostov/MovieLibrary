@@ -6,10 +6,11 @@
         <ul class="product style2 clearfix">
             @foreach (var item in Model)
             {
-
+                
                 <li class="product-item">
                     <div class="product-thumb clearfix">
                         <a href="#" class="product-thumb">
+                            <img src="@item.PosterSource" asp-append-version="true" />
                             @*<img src="images/shop/sh-4/14.jpg" alt="image">*@
                             @*<img class="img-circle img-responsive" src="@Url.Content(item.Pro_image)" />*@
                         </a>
@@ -25,10 +26,19 @@
                         </div>
 
                     </div>
-                    <div class="add-to-cart text-center">
-                        @*<a href="#"> @Html.ActionLink("ADD TO CART", "Addtocart", new { id = item.Pro_id }, new { @class = "myactionlink" })</a>*@
+                    <div class="text-center">
+                        <form asp-action="Favourite" asp-route-movieId="@item.Id">
+                             <a asp-action="MovieDetails" asp-route-movieId="@item.Id" class="btn btn-info text-white">View</a>
+                            <button type="submit" class="btn-dark">
+                                Fav
+                            </button>
+                        </form>
+                        <form asp-action="BucketList" asp-route-movieId="@item.Id">
+                             <button type="submit" class="btn-dark">
+                                Bucket
+                            </button>
+                        </form>
                     </div>
-                    <a href="#" class="like"><i class="fa fa-heart-o"></i></a>
                 </li>
             }
         </ul>

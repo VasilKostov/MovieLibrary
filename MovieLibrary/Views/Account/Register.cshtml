@@ -1,56 +1,72 @@
 ﻿@using MovieLibrary.ViewModels
+@using Microsoft.AspNetCore.Identity
 @model RegisterViewModel
+@inject SignInManager<AppUser> signInManager
 
-<h1 class="text-info">Register</h1>
-<form asp-controller="Account" asp-action="Register" method="post" role="form">
-    <h4>Create a new account</h4>
-    <hr />
-    <div asp-validation-summary="All" class="text-danger"></div>
-    <div class="form-group">
-    <label asp-for="FirstName" class="col-md-2"></label>
-        <div class="col-md-10">
-        <input asp-for="FirstName" class="form-control" />
-        <span asp-validation-for="FirstName" class="text-danger"></span>
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="~/css/register.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://kit.fontawesome.com/9c0d45803b.js" crossorigin="anonymous"></script>
+    <title>Register</title>
+</head>
+<bodyy>
+    <div class="container" id="container">
+        <div class="form-container log-in-container">
+            <form1>
+                <h1>Register</h1>
+                <span>With:</span>
+                <div class="social-container">
+                    @{
+                        var schemes = await signInManager.GetExternalAuthenticationSchemesAsync();
+                        var loginProivders = schemes.ToList();
+                    }
+                    @if (loginProivders.Count() > 0)
+                    {
+                        <form asp-controller="Account" asp-action="ExternalLogin" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" role="form">
+                            @foreach (var provider in loginProivders)
+                            {
+                                if (provider.Name == "Facebook")
+                                {
+                                    <button class="FBbutton" type="submit" name="provider" value="@provider.Name">
+                                        <i class="fa fa-facebook fa-2x"></i>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button class="Gbutton" type="submit" name="provider" value="@provider.Name">
+                                        <i class="fab fa fa-google fa-2x"></i>
+                                    </button>
+                                }
+                            }
+                        </form>
+                    }
+                </div>
+                <span>or create your account on your own</span>
+                <div class="social-container">
+                    <form asp-controller="Account" asp-action="Register" method="post" role="form" enctype="multipart/form-data">
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                        <input asp-for="FirstName" autocomplete="off" type="text" class="form-control" placeholder="Fistname">
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                        <input asp-for="LastName" autocomplete="off" type="text" class="form-control" placeholder="Lastname">
+                        <span asp-validation-for="Age" class="text-danger"></span>
+                        <input asp-for="Age" min="12" max="150" step="default" type="number" class="form-control" value=" " placeholder="Age">
+                        <span asp-validation-for="UserName" class="text-danger"></span>
+                        <input asp-for="UserName" autocomplete="off" type="text" class="form-control" placeholder="Username">
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                        <input asp-for="Email" autocomplete="off" type="email" class="form-control" placeholder="Email">
+                        @Html.ValidationMessageFor(m => m.ProfilePircture, "", new { @class = "text-danger" })
+                        <input asp-for="ProfilePircture" type="file" class="form-control" placeholder="Profile picture">
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                        <input asp-for="Password" autocomplete="off" type="password" class="form-control" placeholder="Password">
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        <input asp-for="ConfirmPassword" class="form-control" autocomplete="off" type="password" class="form-control" id="id_password" placeholder="Confirm password" />
+                        <p>Already have an account? <a asp-controller="Account" asp-action="Login" style="color:black">Click here</a>.</p>
+                        <button class="loginbutton">Register</button>
+                    </form>
+            </form1>
         </div>
     </div>
-    <div class="form-group">
-    <label asp-for="LastName" class="col-md-2"></label>
-    <div class="col-md-10">
-        <input asp-for="LastName" class="form-control" />
-        <span asp-validation-for="LastName" class="text-danger"></span>
-    </div>
-    </div>
-    <div class="form-group">
-        <label asp-for="Email" class="col-md-2"></label>
-        <div class="col-md-10">
-            <input asp-for="Email" class="form-control" />
-            <span asp-validation-for="Email" class="text-danger"></span>
-        </div>
-    </div>
-    <div class="form-group">
-        <label asp-for="UserName" class="col-md-2"></label>
-        <div class="col-md-10">
-            <input asp-for="UserName" class="form-control" />
-            <span asp-validation-for="UserName" class="text-danger"></span>
-        </div>
-    </div>
-    <div class="form-group">
-        <label asp-for="Password" class="col-md-2"></label>
-        <div class="col-md-10">
-            <input asp-for="Password" class="form-control" />
-            <span asp-validation-for="Password" class="text-danger"></span>
-        </div>
-    </div>
-    <div class="form-group">
-        <label asp-for="ConfirmPassword" class="col-md-2"></label>
-        <div class="col-md-10">
-            <input asp-for="ConfirmPassword" class="form-control" />
-            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="offset-md-2 col-md-10">
-            <button type="submit" class="btn btn-success">Register</button>
-        </div>
-    </div>
-</form>
+</bodyy>
+</html>

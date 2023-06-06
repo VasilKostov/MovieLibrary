@@ -7,6 +7,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ViewModels\MovieViewModels\DeleteMovie\**" />
+    <Compile Remove="ViewModels\MovieViewModels\ReadMovie\**" />
+    <Compile Remove="ViewModels\MovieViewModels\UpdateMovie\**" />
+    <Content Remove="ViewModels\MovieViewModels\DeleteMovie\**" />
+    <Content Remove="ViewModels\MovieViewModels\ReadMovie\**" />
+    <Content Remove="ViewModels\MovieViewModels\UpdateMovie\**" />
+    <EmbeddedResource Remove="ViewModels\MovieViewModels\DeleteMovie\**" />
+    <EmbeddedResource Remove="ViewModels\MovieViewModels\ReadMovie\**" />
+    <EmbeddedResource Remove="ViewModels\MovieViewModels\UpdateMovie\**" />
+    <None Remove="ViewModels\MovieViewModels\DeleteMovie\**" />
+    <None Remove="ViewModels\MovieViewModels\ReadMovie\**" />
+    <None Remove="ViewModels\MovieViewModels\UpdateMovie\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="6.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="6.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
@@ -25,9 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ViewModels\MovieViewModels\UpdateMovie\" />
-    <Folder Include="ViewModels\MovieViewModels\DeleteMovie\" />
-    <Folder Include="ViewModels\MovieViewModels\ReadMovie\" />
+    <Folder Include="wwwroot\images\posters\" />
   </ItemGroup>
 
 </Project>

@@ -3,7 +3,7 @@ using Microsoft.Build.Framework;
 using MovieLibrary.Models.Movies;
 using MovieLibrary.Models.Relations;
 
-namespace MovieLibrary.ViewModels.MovieViewModels.CreateMovie
+namespace MovieLibrary.ViewModels.MovieViewModels
 {
     public class CreateMovieViewModel
     {
@@ -17,6 +17,10 @@ namespace MovieLibrary.ViewModels.MovieViewModels.CreateMovie
         public int MinimumAge { get; set; }
         [Required]
         public string Description { get; set; }
+        [Required]
+        public IFormFile Poster { get; set; }
+        [Required]
+        public string YoutubeUrl { get; set; }
 
         public MovieCategory Category { get; set; }
 

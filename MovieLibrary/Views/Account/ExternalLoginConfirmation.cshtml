@@ -1,56 +1,39 @@
 ﻿@using MovieLibrary.ViewModels
 @model ExternalLoginViewModel
 
-<h1 class="text-info">Register</h1>
-<h3>Associate your @ViewData["ProviderDisplayName"] account.</h3>
-
-<form asp-controller="Account" asp-action="ExternalLoginConfirmation" method="post" role="form" asp-route-returnurl="@ViewData["ReturnUrl"]">
-    <h4>Association Form</h4>
-    <hr />
-    <div asp-validation-summary="All" class="text-danger"></div>
-    <p>
-        You've successfully authenticated with <strong>@ViewData["ProviderDisplayName"]</strong>.
-        Please enter a user name for this site below and click the Register button to finish
-        logging in.
-    </p>
-    <div class="form-group">
-        <label asp-for="FirstName" class="col-md-2"></label>
-        <div class="col-md-10">
-            <input asp-for="FirstName" class="form-control" />
-            <span asp-validation-for="FirstName" class="text-danger"></span>
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="~/css/externalLogin.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://kit.fontawesome.com/9c0d45803b.js" crossorigin="anonymous"></script>
+    <title>ExternalLogin</title>
+</head>
+<bodyy>
+    <div class="container" id="container">
+        <div class="form-container log-in-container">
+            <form1>
+                <h1>Register</h1>
+                <h2>with</h2>
+                <h2>@ViewData["ProviderDisplayName"] account.</h2>
+                <div class="social-container">
+                    <form asp-controller="Account" asp-action="ExternalLoginConfirmation" method="post" enctype="multipart/form-data" role="form" asp-route-returnurl="@ViewData["ReturnUrl"]">
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                        <input asp-for="FirstName" autocomplete="off" type="text" class="form-control" placeholder="Fistname" readonly>
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                        <input asp-for="LastName" autocomplete="off" type="text" class="form-control" placeholder="Lastname" readonly>
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                        <input asp-for="Email" autocomplete="off" type="email" class="form-control" placeholder="Email" readonly>
+                        <span asp-validation-for="Age" class="text-danger"></span>
+                        <input asp-for="Age" min="12" max="150" step="default" type="number" class="form-control" value="" placeholder="Age">
+                        <span asp-validation-for="Username" class="text-danger"></span>
+                        <input asp-for="Username" autocomplete="off" type="text" class="form-control" placeholder="Username">
+                        @Html.ValidationMessageFor(m => m.ProfilePircture, "", new { @class = "text-danger" })
+                        <input asp-for="ProfilePircture" type="file" class="form-control" placeholder="Profile picture">
+                        <button class="loginbutton">Register</button>
+                    </form>
+            </form1>
         </div>
     </div>
-    <div class="form-group">
-        <label asp-for="LastName" class="col-md-2"></label>
-        <div class="col-md-10">
-            <input asp-for="LastName" class="form-control" />
-            <span asp-validation-for="LastName" class="text-danger"></span>
-        </div>
-    </div>
-    <div class="form-group">
-        <label asp-for="Email" class="col-md-2"></label>
-        <div class="col-md-10">
-            <input asp-for="Email" class="form-control" />
-            <span asp-validation-for="Email" class="text-danger"></span>
-        </div>
-    </div>
-    <div class="form-group">
-        <label asp-for="Username" class="col-md-2"></label>
-        <div class="col-md-10">
-            <input asp-for="Username" class="form-control" />
-            <span asp-validation-for="Username" class="text-danger"></span>
-        </div>
-    </div>
-
-    <div class="form-group">
-        <div class="col-md-2">
-            <button type="submit" class="btn btn-success form-control">Register</button>
-        </div>
-    </div>
-</form>
-
-@section Scripts{
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-    } 
+</bodyy>
+</html>

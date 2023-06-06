@@ -3,76 +3,68 @@
 @using Microsoft.AspNetCore.Identity
 @inject SignInManager<AppUser> signInManager
 
-
-<h1 class="text-info">Log in</h1>
-<div class="row">
-    <div class="col-md-8">
-        <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@Model.ReturnUrl" method="post" role="form">
-        @*<form asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" role="form">*@
-            <h4>Use a local account to log in.</h4>
-            <hr />
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Email" class="col-md-2"></label>
-                <div class="col-md-10">
-                    <input asp-for="Email" class="form-control" />
-                    <span asp-validation-for="Email" class="text-danger"></span>
-                </div>
-            </div>
-            <div class="form-group">
-                <label asp-for="Password" class="col-md-2"></label>
-                <div class="col-md-10">
-                    <input asp-for="Password" class="form-control" />
-                    <span asp-validation-for="Password" class="text-danger"></span>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class=" col-md-10">
-                    <div class="custom-checkbox">
-                        <label asp-for="RememberMe">
-                            <input asp-for="RememberMe" />
-                            @Html.DisplayNameFor(m => m.RememberMe)
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-success form-control">Log in</button>
-                </div>
-            </div>
-            <p>
-                <a asp-action="Register"> Register as a new user?</a>
-            </p>
-            <p>
-                @*<a asp-action="ForgotPassword"> Forgot your passowrd?</a>*@
-            </p>
-        </form>
-    </div>
-    @{
-        var schemes = await signInManager.GetExternalAuthenticationSchemesAsync();
-        var loginProivders = schemes.ToList();
-    }
-    @if (loginProivders.Count() > 0)
-    {
-        <div class="col-md-4">
-            <section>
-                <h4>User another service to log in.</h4>
-                <form asp-controller="Account" asp-action="ExternalLogin" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" role="form">
-                    <div>
-                        <p>
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="~/css/login.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Login</title>
+</head>
+<bodyy>
+    <div class="container" id="container">
+        <div class="form-container log-in-container">
+            <form1>
+                <h1>Login</h1>
+                <div class="social-container">
+                    @{
+                        var schemes = await signInManager.GetExternalAuthenticationSchemesAsync();
+                        var loginProivders = schemes.ToList();
+                    }
+                    @if (loginProivders.Count() > 0)
+                    {
+                        <form asp-controller="Account" asp-action="ExternalLogin" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" role="form">
                             @foreach (var provider in loginProivders)
                             {
-                                <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name"
-                                title="Log in using your @provider.Name account">
-                                    @provider.Name
-                                </button>
+                                if (provider.Name == "Facebook")
+                                {
+                                    <button class="FBbutton" type="submit" name="provider" value="@provider.Name">
+                                        <i class="fa fa-facebook fa-2x"></i>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button class="Gbutton" type="submit" name="provider" value="@provider.Name">
+                                        <i class="fab fa fa-google fa-2x"></i>
+                                    </button>
+                                }
                             }
-                        </p>
-                    </div>
+                        </form>
+                    }
+                </div>
+                <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@Model.ReturnUrl" method="post" role="form">
+                    <span>or use your account</span>
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <input asp-for="Email" autocomplete="off" type="email" class="form-control" placeholder="Email">
+                    <input asp-for="Password" autocomplete="off" type="password" class="form-control" placeholder="Password">
+                    <div style="margin:10px 0 10px">Remeber me<input asp-for="RememberMe" /></div>
+                    <button class="loginbutton">Log In</button>
                 </form>
-            </section>
+            </form1>
         </div>
-    }
-</div>
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-panel overlay-right">
+                    <h1>Welcome to MovieLibrary</h1>
+                    <p>
+                        This website is for people, who want to keep track of new/old/watched/willing-to-watch movies.
+                        <br />
+                        <br />
+                        <br />
+                        Don't have an account? <a asp-controller="Account" asp-action="Register" style="color:black">Click here</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</bodyy>
+</html>
