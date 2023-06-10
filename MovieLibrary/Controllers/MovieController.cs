@@ -32,25 +32,36 @@ namespace MovieLibrary.Controllers
             _db = db;
             _webHostEnvironment = webHostEnvironment;
         }
+
+        #region Movies
         [HttpGet]
         public IActionResult AllMoviesDetails()
         {
-            AppUser user = _db.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
+            var user = _db.Users.FirstOrDefault(u => u.UserName == User.Identity!.Name);
+
+            if (user is null)
+                return View("Error", "Nullable exception in AppUsers");
+
             var movies = _db.Movies.Where(m => m.MinimumAge <= user.Age && m.Accepted == true).ToList();
+
             return View(movies);
         }
+        #endregion
 
+        #region Movie
         [HttpGet]
         public IActionResult MovieDetails(int? movieId)
         {
             if (movieId is null)
-                return View("Error", "Nullable exception");
+                return View("Error", "Nullable exception in AppUsers");
 
             var movie = _db.Movies.FirstOrDefault(m => m.Id == movieId);
 
             if (movie is null)
-                return View("Error", "Nullable exception");
+                return View("Error", "Nullable exception in Movies");
+
             var comments = _db.MovieComments.Where(c => c.MovieId == movie.Id).ToList();
+
             var model = new MovieDetailsViewModel()
             {
                 Id = movie.Id,
@@ -69,27 +80,40 @@ namespace MovieLibrary.Controllers
 
             return View(model);
         }
+        #endregion
 
+        #region Waitlist
         public IActionResult Index()
         {
             var movieList = _db.Movies.Where(m => m.Accepted == true).OrderByDescending(u => u.AppUserId).ThenBy(u => u.Category).ToList();
+            var movieAndRole = new List<(string, Movie)>();
 
-            return View(movieList);
+            foreach (var movie in movieList)
+            {
+                var roleId = _db.UserRoles.Where(r => r.UserId == movie.AppUserId).First().RoleId;
+                var role = _db.Roles.Where(r => r.Id == roleId).First().Name;
+                movieAndRole.Add((role!, movie));
+            }
+
+            return View(movieAndRole);
         }
+        #endregion
 
+        #region CreateMovie
         [HttpGet]
         public IActionResult Create()
         {
             var model = new CreateMovieViewModel();
 
-            IEnumerable<MovieAward> movieAwards = _db.MovieAwards;
-            IEnumerable<Producer> movieProducers = _db.Producers;
-            IEnumerable<Actor> movieActors = _db.Actors;
-            model.AllMovieAwards = new SelectList(movieAwards, "Id", "Name");
-            model.AllProducers = new SelectList(movieProducers, "Id", "Name");
-            model.AllMovieActors = new SelectList(movieActors, "Id", "FullName");
+            List<MovieAward> movieAwards = _db.MovieAwards.ToList();
+            List<Producer> movieProducers = _db.Producers.ToList();
+            List<Actor> movieActors = _db.Actors.ToList();
+            model.AllMovieAwards = new SelectList(movieAwards, "Id", "Name").ToList();
+            model.AllProducers = new SelectList(movieProducers, "Id", "Name").ToList();
+            model.AllMovieActors = new SelectList(movieActors, "Id", "FullName").ToList();
             return View(model);
         }
+
         [HttpPost]
         public async Task<IActionResult> Create(CreateMovieViewModel model)
         {
@@ -114,34 +138,33 @@ namespace MovieLibrary.Controllers
                 TrailerUrl = GetIdFromYoutubeUrl(model.YoutubeUrl)
             };
 
-            if (model.Poster == null)
+            if (model.Poster is null)
             {
                 ModelState.AddModelError(string.Empty, "Please upload a file.");
                 throw new Exception("Please upload a file.");
             }
-            else if (model.Poster.Length > 0 && model.Poster != null)
+            else if (model.Poster.Length > 0 && model.Poster is not null)
             {
                 var path = Path.Combine(_webHostEnvironment.WebRootPath, "images/posters", model.Poster.FileName);
+
                 using (var memoryStream = new MemoryStream())
                 {
                     await model.Poster.CopyToAsync(memoryStream);
 
-                    // Upload the file if less than 2 MB  
-                    if (memoryStream.Length < 2097152)
-                    {
+                    if (memoryStream.Length < 2097152)// Upload the file if less than 2 MB
                         newMovie.PosterSource = ChangePicturePath(path);
-                    }
                     else
-                    {
                         ModelState.AddModelError(string.Empty, "The file is too large. It must be under 2 MB");
-                    }
                 }
+
                 using FileStream stream = new FileStream(path, FileMode.Create);
                 await model.Poster.CopyToAsync(stream);
                 stream.Close();
             }
+
             _db.Movies.Add(newMovie);
             _db.SaveChanges();
+
             //Create method for the connection in movie.cs
             foreach (var awardId in model.SelectedMovieAwardsIds)
             {
@@ -150,9 +173,11 @@ namespace MovieLibrary.Controllers
                     MovieId = newMovie.Id,
                     MovieAwardId = awardId
                 };
+
                 _db.Movie_MovieAwards.Add(newMovieWithAwards);
                 _db.SaveChanges();
             }
+
             foreach (var actorId in model.SelectedMovieActorsIds)
             {
                 Actor_Movie newMovieWithActor = new Actor_Movie()
@@ -160,11 +185,14 @@ namespace MovieLibrary.Controllers
                     MovieId = newMovie.Id,
                     ActorId = actorId
                 };
+
                 _db.Actors_Movies.Add(newMovieWithActor);
                 _db.SaveChanges();
             }
+
             return RedirectToAction(nameof(Create));
         }
+        #endregion
 
         [Authorize(Roles = "Admin,Manager")]
         [HttpGet]
@@ -278,61 +306,95 @@ namespace MovieLibrary.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        #region DeleteMovie
         [HttpPost]
-        public IActionResult Delete(int movieId)
+        public IActionResult Delete(int? movieId)
         {
+            if (movieId is null || movieId is 0)
+                return View("Error", "Nullable exception in Movies");
+
             var movie = _db.Movies.FirstOrDefault(u => u.Id == movieId);
-            if (movie == null)
-            {
-                return NotFound();
-            }
+
+            if (movie is null)
+                return View("Error", "Nullable exception in Movies");
+
             _db.Movies.Remove(movie);
             _db.SaveChanges();
+
             return RedirectToAction(nameof(Index));
         }
+        #endregion
 
+        #region DeleteComment
         [HttpPost]
-        public IActionResult DeleteComment(int commentId)
+        public IActionResult DeleteComment(int? commentId)
         {
+            if (commentId is null || commentId is 0)
+                return View("Error", "Nullable exception in Comments");
+
             var comment = _db.MovieComments.FirstOrDefault(u => u.Id == commentId);
-            if (comment == null)
-            {
-                return NotFound();
-            }
+            if (comment is null)
+                return View("Error", "Nullable exception in Comments");
+
             int movieId = comment.MovieId;
+
             _db.MovieComments.Remove(comment);
             _db.SaveChanges();
+
             return RedirectToAction("MovieDetails", new { movieId = comment.MovieId });
         }
+        #endregion
 
+        #region Accept
         [HttpGet]
         public IActionResult Accept()
         {
-            AppUser user = _db.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
+            AppUser? user = _db.Users.FirstOrDefault(u => u.UserName == User.Identity!.Name);
+
+            if (user is null)
+                return View("Error", "Nullable exception in AppUsers");
+
             var movies = _db.Movies.Where(m => m.Accepted == false).ToList();
+
             return View(movies);
         }
+
         [HttpPost]
         public IActionResult Accept(int? movieId)
         {
-            Movie movie = _db.Movies.FirstOrDefault(m => m.Id == movieId);
-            if (movie == null)
-            {
-                return RedirectToAction("Accept");
-            }
-            movie.Accepted = true;
-            _db.SaveChanges();
-            return RedirectToAction("Accept");
-        }
+            if (movieId is null || movieId is 0)
+                return View("Error", "Nullable exception in Movies");
 
+            Movie? movie = _db.Movies.FirstOrDefault(m => m.Id == movieId);
+
+            if (movie is null)
+                return View("Error", "Nullable exception");
+
+            movie.Accepted = true;
+
+            _db.SaveChanges();
+
+            return RedirectToAction(nameof(Accept));
+        }
+        #endregion
+
+        #region Favourit
         [HttpGet]
         public IActionResult Favourite()
         {
-            AppUser user = _db.AppUser.FirstOrDefault(u => u.UserName == User.Identity.Name);
-            List<Favourite> favouriteUserMovies = _db.Favourites.Where(m => m.AppUserId == user.Id).ToList();
-            List<Movie> movies = new List<Movie>();
-            List<Movie> AllMovies = _db.Movies.ToList();
-            foreach (var movie in favouriteUserMovies)
+            var user = _db.AppUser.FirstOrDefault(u => u.UserName == User.Identity!.Name);
+
+            if (user is null)
+                return View("Error", "Nullable exception in AppUsers");
+
+            var favUserMovies = _db.Favourites.Where(m => m.AppUserId == user.Id).ToList();
+            var movies = new List<Movie>();
+            var AllMovies = _db.Movies.ToList();
+
+            if (AllMovies is null || favUserMovies)
+                return View("Error", "Nullable exception");
+
+            foreach (var movie in favUserMovies)
             {
                 movies.Add(AllMovies.FirstOrDefault(m => m.Id == movie.MovieId));
             }

@@ -29,10 +29,10 @@
                         @if (SignInManager.IsSignedIn(User))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Actor" asp-action="Create">Add actor</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Actor" asp-action="Create">Add an actor</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Movie" asp-action="Create">Add movie</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Movie" asp-action="Create">Add a movie</a>
                             </li>
                             @if (User.IsInRole("Admin"))
                             {
@@ -50,18 +50,18 @@
                                 </li>
                             }
                             <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Movie" asp-action="BucketList">Wishlist</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Movie" asp-action="Favourite">Favourite Movies</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link text-black" asp-area="" asp-controller="Account" asp-action="Profile">@UserManager.GetUserName(User)</a>
                             </li>
                             <li class="nav-item">
                                 <form id="logoutForm" method="post" class="form-inline" asp-controller="Account" asp-action="LogOff">
                                     <button type="submit" class="nav-link">Logout</button>
                                 </form>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Movie" asp-action="BucketList">Wish List</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Movie" asp-action="Favourite">Favourite Movies</a>
                             </li>
                         }
                         else

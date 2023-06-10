@@ -15,9 +15,9 @@
     </form>
 }
 <div>
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/@Model.YoutubeTrailerId" 
-    title="YouTube video player" frameborder="0" 
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/@Model.YoutubeTrailerId"
+            title="YouTube video player" frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 </div>
 <h4>Rate the movie:</h4>
 <form asp-action="Comment">
@@ -33,39 +33,42 @@
     <input type="submit" value="Save" class="btn btn-primary" />
 </form>
 
-@foreach (var comment in Model.Comments)
+@if (Model.Comments is not null)
 {
-    <div>
-        @comment.Text
-        <form asp-action="DeleteComment" asp-route-commentId="@comment.Id">
-            <button type="submit" onclick="return confirm('Are you sure you want to delete this comment?')"
-                class="btn btn-danger">
-                Delete
-            </button>
-        </form>
-        @if ((@DateTime.Now.Minute - @comment.PostedTime.Minute) <= 59 && (@DateTime.Now.Minute - @comment.PostedTime.Minute) > 0)
-        {
-            <div>
-                @(DateTime.Now.Minute - @comment.PostedTime.Minute) mins ago
-            </div>
-        }
-        @if ((@DateTime.Now.Hour - @comment.PostedTime.Hour) <= 23 && (@DateTime.Now.Hour - @comment.PostedTime.Hour) > 0)
-        {
-            <div>
-                @(DateTime.Now.Hour - @comment.PostedTime.Hour) hours ago
-            </div>
-        }
-        @if ((@DateTime.Now.Day - @comment.PostedTime.Day) <= 364 && (@DateTime.Now.Day - @comment.PostedTime.Day) > 0)
-        {
-            <div>
-                @(DateTime.Now.Day - @comment.PostedTime.Day) days ago
-            </div>
-        }
-        @if ((@DateTime.Now.Year - @comment.PostedTime.Year) >= 1 && (@DateTime.Now.Year - @comment.PostedTime.Year) > 0)
-        {
-            <div>
-                @(DateTime.Now.Year - @comment.PostedTime.Year) years ago
-            </div>
-        }
-    </div>
+    @foreach (var comment in Model.Comments)
+    {
+        <div>
+            @comment.Text
+            <form asp-action="DeleteComment" asp-route-commentId="@comment.Id">
+                <button type="submit" onclick="return confirm('Are you sure you want to delete this comment?')"
+                        class="btn btn-danger">
+                    Delete
+                </button>
+            </form>
+            @if ((@DateTime.Now.Minute - @comment.PostedTime.Minute) <= 59 && (@DateTime.Now.Minute - @comment.PostedTime.Minute) > 0)
+            {
+                <div>
+                    @(DateTime.Now.Minute - @comment.PostedTime.Minute) mins ago
+                </div>
+            }
+            @if ((@DateTime.Now.Hour - @comment.PostedTime.Hour) <= 23 && (@DateTime.Now.Hour - @comment.PostedTime.Hour) > 0)
+            {
+                <div>
+                    @(DateTime.Now.Hour - @comment.PostedTime.Hour) hours ago
+                </div>
+            }
+            @if ((@DateTime.Now.Day - @comment.PostedTime.Day) <= 364 && (@DateTime.Now.Day - @comment.PostedTime.Day) > 0)
+            {
+                <div>
+                    @(DateTime.Now.Day - @comment.PostedTime.Day) days ago
+                </div>
+            }
+            @if ((@DateTime.Now.Year - @comment.PostedTime.Year) >= 1 && (@DateTime.Now.Year - @comment.PostedTime.Year) > 0)
+            {
+                <div>
+                    @(DateTime.Now.Year - @comment.PostedTime.Year) years ago
+                </div>
+            }
+        </div>
+    }
 }

@@ -1,46 +1,53 @@
-﻿@model IEnumerable<MovieLibrary.Models.Movies.Movie>
+﻿@model List<MovieLibrary.Models.Movies.Movie>
 <h1>All movies</h1>
 <hr />
 <div>
     <div class="product-content product-fourcolumn clearfix">
-        <ul class="product style2 clearfix">
-            @foreach (var item in Model)
-            {
-                
-                <li class="product-item">
-                    <div class="product-thumb clearfix">
-                        <a href="#" class="product-thumb">
-                            <img src="@item.PosterSource" asp-append-version="true" />
-                            @*<img src="images/shop/sh-4/14.jpg" alt="image">*@
-                            @*<img class="img-circle img-responsive" src="@Url.Content(item.Pro_image)" />*@
-                        </a>
-                        <span class="new">New</span>
-                    </div>
-                    <div class="product-info clearfix">
-                        <br />
-                        <span class="product-title">@item.Title</span>
-                        <div class="price">
-                            <ins>
-                                <span class="amount">*@item.Rating</span>
-                            </ins>
-                        </div>
+        @if (Model is null || Model.Count < 1)
+        {
+            <h2>There are no movie right now. Try again later!</h2>
+        }
+        else
+        {
+            <ul class="product style2 clearfix">
+                @foreach (var item in Model!)
+                {
 
-                    </div>
-                    <div class="text-center">
-                        <form asp-action="Favourite" asp-route-movieId="@item.Id">
-                             <a asp-action="MovieDetails" asp-route-movieId="@item.Id" class="btn btn-info text-white">View</a>
-                            <button type="submit" class="btn-dark">
-                                Fav
-                            </button>
-                        </form>
-                        <form asp-action="BucketList" asp-route-movieId="@item.Id">
-                             <button type="submit" class="btn-dark">
-                                Bucket
-                            </button>
-                        </form>
-                    </div>
-                </li>
-            }
-        </ul>
+                    <li class="product-item">
+                        <div class="product-thumb clearfix">
+                            <a href="#" class="product-thumb">
+                                <img src="@item.PosterSource" asp-append-version="true" />
+                                @*<img src="images/shop/sh-4/14.jpg" alt="image">*@
+                                @*<img class="img-circle img-responsive" src="@Url.Content(item.Pro_image)" />*@
+                            </a>
+                            <span class="new">New</span>
+                        </div>
+                        <div class="product-info clearfix">
+                            <br />
+                            <span class="product-title">@item.Title</span>
+                            <div class="price">
+                                <ins>
+                                    <span class="amount">*@item.Rating</span>
+                                </ins>
+                            </div>
+
+                        </div>
+                        <div class="text-center">
+                            <form asp-action="Favourite" asp-route-movieId="@item.Id">
+                                <a asp-action="MovieDetails" asp-route-movieId="@item.Id" class="btn btn-info text-white">View</a>
+                                <button type="submit" class="btn-dark">
+                                    Fav
+                                </button>
+                            </form>
+                            <form asp-action="BucketList" asp-route-movieId="@item.Id">
+                                <button type="submit" class="btn-dark">
+                                    Bucket
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
     </div>
 </div>

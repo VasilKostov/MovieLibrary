@@ -24,13 +24,13 @@ namespace MovieLibrary.ViewModels.MovieViewModels
 
         public MovieCategory Category { get; set; }
 
-        public IEnumerable<SelectListItem> AllMovieAwards { get; set; }
+        public List<SelectListItem> AllMovieAwards { get; set; }
         public int[] SelectedMovieAwardsIds { get; set; }
 
-        public IEnumerable<SelectListItem> AllMovieActors { get; set; }
+        public List<SelectListItem> AllMovieActors { get; set; }
         public int[] SelectedMovieActorsIds { get; set; }
 
-        public IEnumerable<SelectListItem> AllProducers { get; set; }
+        public List<SelectListItem> AllProducers { get; set; }
         public int ProducerId { get; set; }
     }
 }
