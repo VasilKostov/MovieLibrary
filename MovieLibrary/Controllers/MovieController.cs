@@ -285,7 +285,7 @@ namespace MovieLibrary.Controllers
 
             foreach (var awardId in movie.SelectedMovieAwardsIds)
             {
-                Movie_MovieAward newMovieWithAwards = new Movie_MovieAward()
+                var newMovieWithAwards = new Movie_MovieAward()
                 {
                     MovieId = movie.Id,
                     MovieAwardId = awardId
@@ -295,7 +295,7 @@ namespace MovieLibrary.Controllers
             }
             foreach (var actorId in movie.SelectedMovieActorsIds)
             {
-                Actor_Movie newMovieWithActor = new Actor_Movie()
+                var newMovieWithActor = new Actor_Movie()
                 {
                     MovieId = movie.Id,
                     ActorId = actorId
@@ -391,33 +391,40 @@ namespace MovieLibrary.Controllers
             var movies = new List<Movie>();
             var AllMovies = _db.Movies.ToList();
 
-            if (AllMovies is null || favUserMovies)
-                return View("Error", "Nullable exception");
+            if (AllMovies is null || favUserMovies is null)
+                return View(movies);
 
             foreach (var movie in favUserMovies)
             {
-                movies.Add(AllMovies.FirstOrDefault(m => m.Id == movie.MovieId));
+                movies.Add(AllMovies.First(m => m.Id == movie.MovieId));
             }
+
             return View(movies);
         }
 
         [HttpPost]
         public IActionResult Favourite(int movieId)
         {
-            AppUser user = _db.AppUser.FirstOrDefault(u => u.UserName == User.Identity.Name);
-            Favourite favouriteMovieToAdd = new Favourite()
+            var user = _db.AppUser.FirstOrDefault(u => u.UserName == User.Identity!.Name);
+
+            if (user is null)
+                return View("Error", "Nullable exception in AppUsers");
+
+            var favouriteMovieToAdd = new Favourite()
             {
                 MovieId = movieId,
                 AppUserId = user.Id
             };
+
             if (_db.Favourites.Contains(favouriteMovieToAdd))
-            {
                 return RedirectToAction(nameof(AllMoviesDetails));
-            }
+
             _db.Favourites.Add(favouriteMovieToAdd);
             _db.SaveChanges();
+
             return RedirectToAction(nameof(AllMoviesDetails));
         }
+        #endregion
 
         [HttpGet]
         public IActionResult BucketList()
