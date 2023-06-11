@@ -21,37 +21,22 @@ namespace MovieLibrary.Models.Movies
         public string? PosterSource { get; set; }
         public bool Accepted { get; set; }
         public string? TrailerUrl { get; set; }
+
         [NotMapped]
         public IFormFile? PosterFile { get; set; }
-        //Find how to get the role name here without the controller
-        //public string? AppUserRole { get; set; }
-        //Later if we delete an AppUser their created Actors and Movies must be deleted too!
         public string? AppUserId { get; set; }
         public AppUser? AppUser { get; set; }
-        public ICollection<MovieComment> MovieComments { get; set; }
+        public List<MovieComment> MovieComments { get; set; }
         public List<Actor_Movie> ActorsMovies { get; set; }
-        public ICollection<Movie_MovieAward> Movie_MovieAwards { get; set; }
-        public ICollection<Favourite> Favourites { get; set; }
-        public ICollection<BucketList> BucketLists { get; set; }
+        public List<Movie_MovieAward> Movie_MovieAwards { get; set; }
+        public List<Favourite> Favourites { get; set; }
+        public List<BucketList> BucketLists { get; set; }
+
         [EnumDataType(typeof(MovieCategory))]
         public MovieCategory Category { get; set; }
         public int ProducerId { get; set; }
+
         [ForeignKey("ProducerId")]
         public Producer Producer { get; set; }
-
-
-        [NotMapped]
-        public IEnumerable<SelectListItem> AllMovieAwards { get; set; }
-        [NotMapped]
-        public int[] SelectedMovieAwardsIds { get; set; }
-        [NotMapped]
-        public IEnumerable<SelectListItem> AllMovieActors { get; set; }
-        [NotMapped]
-        public int[] SelectedMovieActorsIds { get; set; }
-        [NotMapped]
-        public IEnumerable<SelectListItem> AllProducers { get; set; }
-        [NotMapped]
-        public int SelectedProducerId { get; set; }
-
     }
 }

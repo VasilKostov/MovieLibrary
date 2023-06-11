@@ -15,46 +15,58 @@ namespace MovieLibrary.Controllers
         {
             _db = db;
         }
+
         public IActionResult Index()
         {
             return View();
         }
+
+        #region CreateActor
         [HttpGet]
         public IActionResult Create()
         {
             var model = new CreateActorViewModel();
-            IEnumerable<ActorAward> actorAwards = _db.ActorAwards;
+
+            var actorAwards = _db.ActorAwards.ToList();
+
             model.AllActorAwards = new SelectList(actorAwards, "Id", "Name");
+
             return View(model);
         }
+
         [HttpPost]
         public IActionResult Create(CreateActorViewModel model)
         {
-                AppUser user = _db.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
-                if (user.Id == null)
+            var user = _db.Users.FirstOrDefault(u => u.UserName == User.Identity!.Name);
+
+            if (user is null)
+                return View("Error", "Nullable exception in AppUsers");
+
+            var newActor = new Actor()
+            {
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Gender = model.Gender,
+                AppUserId = user.Id,
+            };
+
+            _db.Actors.Add(newActor);
+            _db.SaveChanges();
+
+            foreach (var awardId in model.SelectedActorAwardsIds)
+            {
+                var newActorWithAwards = new Actor_ActorAward()
                 {
-                    throw new Exception("No authenticated user could be found!");
-                }
-                Actor newActor = new Actor()
-                {
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
-                    Gender= model.Gender,
-                    AppUserId= user.Id,
+                    ActorId = newActor.Id,
+                    ActorAwardId = awardId
                 };
-                _db.Actors.Add(newActor);
+
+                _db.Actor_ActorAwards.Add(newActorWithAwards);
                 _db.SaveChanges();
-                foreach (var awardId in model.SelectedActorAwardsIds)
-                {
-                    Actor_ActorAward newActorWithAwards = new Actor_ActorAward()
-                    {
-                        ActorId= newActor.Id,
-                        ActorAwardId= awardId
-                    };
-                    _db.Actor_ActorAwards.Add(newActorWithAwards);
-                    _db.SaveChanges();
-                }
-                return RedirectToAction(nameof(Create));
+            }
+
+            return RedirectToAction(nameof(Create));
         }
+        #endregion
     }
 }

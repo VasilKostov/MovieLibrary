@@ -1,65 +1,78 @@
 ﻿@using MovieLibrary.Models.Movies
-@model MovieLibrary.Models.Movies.Movie
+@*@model MovieLibrary.Models.Movies.Movie*@
+@using MovieLibrary.ViewModels.MovieViewModels
+@model UpdateMovieViewModel
 <h1 class="text-info">Update Movie</h1>
 
 <div class="row">
     <div class="col-md-8">
         <form method="post" asp-action="Update" method="post" role="form" enctype="multipart/form-data">
-            <input asp-for="@Model.Id" hidden />
+            <input asp-for="@Model.Movie.Id" hidden />
             <hr />
             <div asp-validation-summary="All" class="text-danger"></div>
 
             <div class="form-group">
-                <label asp-for="Title"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
+                <label asp-for="@Model.Movie.Title"></label>
+                <input asp-for="@Model.Movie.Title" class="form-control" />
+                <span asp-validation-for="@Model.Movie.Title" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="Budget"></label>
-                <input asp-for="Budget" class="form-control" />
-                <input asp-for="Budget" hidden />
+                <label asp-for="@Model.Movie.Budget"></label>
+                <input asp-for="@Model.Movie.Budget" class="form-control" />
+                <input asp-for="@Model.Movie.Budget" hidden />
             </div>
 
             <div class="form-group">
-                <label asp-for="ReleaseDate"></label>
-                <input asp-for="ReleaseDate" class="form-control" />
-                <input asp-for="ReleaseDate" hidden />
+                <label asp-for="@Model.Movie.ReleaseDate"></label>
+                <input asp-for="@Model.Movie.ReleaseDate" class="form-control" />
+                <input asp-for="@Model.Movie.ReleaseDate" hidden />
             </div>
 
             <div class="form-group">
-                <label asp-for="MinimumAge"></label>
-                <input asp-for="MinimumAge" class="form-control" />
-                <input asp-for="MinimumAge" hidden />
+                <label asp-for="@Model.Movie.MinimumAge"></label>
+                <input asp-for="@Model.Movie.MinimumAge" class="form-control" />
+                <input asp-for="@Model.Movie.MinimumAge" hidden />
             </div>
 
             <div class="form-group">
-                <label asp-for="Description"></label>
-                <textarea asp-for="Description" class="form-control"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
+                <label asp-for="@Model.Movie.Description"></label>
+                <textarea asp-for="@Model.Movie.Description" class="form-control"></textarea>
+                <span asp-validation-for="@Model.Movie.Description" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="Category" class="col-md-2"></label>
-                <select asp-for="Category" class=" form-control" asp-items="Html.GetEnumSelectList<MovieCategory>()">
+                <label asp-for="@Model.Movie.Category" class="col-md-2"></label>
+                <select asp-for="@Model.Movie.Category" class=" form-control" asp-items="Html.GetEnumSelectList<MovieCategory>()">
                     <option disabled selected value="">Choose movie's genre</option>
                 </select>
-                <span asp-validation-for="Category" class="text-danger"></span>
+                <span asp-validation-for="@Model.Movie.Category" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="SelectedProducerId"></label>
-                <select asp-for="SelectedProducerId"
+                <p>The old movie producer is: @Model.Producer.Name</p>
+                <label asp-for="@Model.SelectedMovieProducerId"></label>
+                <select asp-for="@Model.SelectedMovieProducerId"
                         asp-items="@Model.AllProducers"
                         class="form-control">
-                    <option disabled selected>Select Producer</option>
+                    <option disabled selected>Select new Producer</option>
                 </select>
             </div>
+
+            <h6>If you want to select multiple actors or awards all you need to do is click on the first actor you want to add and if want another hold Shift and select another one</h6>
+
             <link href="~/multiselect/example-styles.css" rel="stylesheet" />
             <div class="container">
                 <div class="card">
                     <div class="card-text text-center">
-                        <h1>Multi Dropdownlist for actors</h1>
+                        <h1>Actors</h1>
+                        <p>
+                            The old movie actors are :
+                            @foreach (var actor in Model.Actors)
+                            {
+                            <p>@actor.FullName</p>
+                            }
+                        </p>
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -75,7 +88,13 @@
             <div class="container">
                 <div class="card">
                     <div class="card-text text-center">
-                        <h1>Multi Dropdownlist for awards</h1>
+                        <h1>Awards</h1>
+                        <p>The old movie awards are : 
+                            @foreach (var award in Model.Awards)
+                            {
+                                <p>@award.Name</p>
+                            }
+                        </p>
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -103,10 +122,10 @@
             <option disabled selected>--Select Role--</option>
             </select>
             </div>*@
-            <img src="@Model.PosterSource" asp-append-version="true" />
+            <img src="@Model.Movie.PosterSource" asp-append-version="true" />
             <div>
                 <p>Choose a poster for the movie</p>
-                <input asp-for="PosterFile" type="file" class="form-control">
+                <input asp-for="@Model.Movie.PosterFile" type="file" class="form-control">
             </div>
             <div class="form-group">
                 <button type="submit" class="btn btn-success">Update</button>

@@ -6,6 +6,6 @@ namespace MovieLibrary.Models.Movies
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public ICollection<Movie_MovieAward> Movie_MovieAwards { get; set; }
+        public List<Movie_MovieAward> Movie_MovieAwards { get; set; }
     }
 }

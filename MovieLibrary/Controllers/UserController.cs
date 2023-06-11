@@ -25,9 +25,11 @@ namespace MovieLibrary.Controllers
             var userList = _db.AppUser.ToList();
             var userRole = _db.UserRoles.ToList();
             var roles = _db.Roles.ToList();
+
             foreach (var user in userList)
             {
                 var role = userRole.FirstOrDefault(u => u.UserId == user.Id);
+
                 if (role is null)
                     user.Role = "None";
                 else
@@ -44,7 +46,7 @@ namespace MovieLibrary.Controllers
             var user = _db.AppUser.FirstOrDefault(u => u.Id == userId);
 
             if (user is null)
-                return View("Error", "Nullable exception");
+                return View("Error", "Nullable exception in AppUsers");
 
             var userRole = _db.UserRoles.ToList();
             var roles = _db.Roles.ToList();

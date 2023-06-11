@@ -3,13 +3,17 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MovieLibrary.Models;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(e =>
     e.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+
 builder.Services.AddControllersWithViews();
+
 builder.Services.AddAuthentication()
 .AddFacebook(options =>
 {
@@ -21,6 +25,7 @@ builder.Services.AddAuthentication()
     options.ClientId = "387234832071-43cg4vgl3ne4qj547s62pinr712jrbf4.apps.googleusercontent.com";
     options.ClientSecret = "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";
 });
+
 builder.Services.Configure<IdentityOptions>(opt =>
 {
     opt.Password.RequiredLength = 5;

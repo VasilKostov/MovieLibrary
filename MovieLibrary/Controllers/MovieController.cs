@@ -165,10 +165,9 @@ namespace MovieLibrary.Controllers
             _db.Movies.Add(newMovie);
             _db.SaveChanges();
 
-            //Create method for the connection in movie.cs
             foreach (var awardId in model.SelectedMovieAwardsIds)
             {
-                Movie_MovieAward newMovieWithAwards = new Movie_MovieAward()
+                var newMovieWithAwards = new Movie_MovieAward()
                 {
                     MovieId = newMovie.Id,
                     MovieAwardId = awardId
@@ -199,71 +198,83 @@ namespace MovieLibrary.Controllers
         public IActionResult Update(int movieId)
         {
             var movie = _db.Movies.FirstOrDefault(u => u.Id == movieId);
-            IEnumerable<MovieAward> movieAwards = _db.MovieAwards;
-            IEnumerable<Producer> movieProducers = _db.Producers;
-            IEnumerable<Actor> movieActors = _db.Actors;
-            if (movie == null)
+            var allmovieAwards = _db.MovieAwards.ToList();
+            var allmovieProducers = _db.Producers.ToList();
+            var allmovieActors = _db.Actors.ToList();
+
+            if (movie is null)
+                return View("Error", "Nullable exception in Movies");
+
+            //Getting the ids of actors and awards
+            var selectedActorsIds = new List<int>();
+            var allActors = _db.Actors_Movies.ToList();
+
+            foreach (var actor in allActors.Where(a => a.MovieId == movie.Id))
+                selectedActorsIds.Add(actor.ActorId);
+
+            var selectedAwardsIds = new List<int>();
+            var allAwards = _db.Movie_MovieAwards.ToList();
+
+            foreach (var award in allAwards.Where(a => a.MovieId == movie.Id))
+                selectedAwardsIds.Add(award.MovieAwardId);
+
+            //Getting the actual obj
+            var movieProducer = _db.Producers.First(p => p.Id == movie.ProducerId);
+
+            var movieActors = new List<Actor>();
+
+            foreach (var actorId in selectedActorsIds)
+                movieActors.Add(allmovieActors.First(i => i.Id == actorId));
+
+            var movieAwards = new List<MovieAward>();
+
+            foreach (var awardId in selectedAwardsIds)
+                movieAwards.Add(allmovieAwards.First(i => i.Id == awardId));
+
+            var viewModel = new UpdateMovieViewModel()
             {
-                return NotFound();
-            }
-            movie.AllMovieAwards = new SelectList(movieAwards, "Id", "Name");
-            movie.AllProducers = new SelectList(movieProducers, "Id", "Name");
-            movie.AllMovieActors = new SelectList(movieActors, "Id", "FullName");
-            //movie.SelectedProducerId = movie.ProducerId;
-            //List<int> selectedActorsIds = new List<int>();
-            //IEnumerable<Actor_Movie> allActors = _db.Actors_Movies;
-            //foreach (var actor in allActors.Where(a => a.MovieId == movie.Id))
-            //{
-            //    selectedActorsIds.Add(actor.ActorId);
-            //}
-            //movie.SelectedMovieActorsIds = selectedActorsIds.ToArray();
+                Movie = movie,
+                Producer = movieProducer,
+                Awards = movieAwards,
+                Actors = movieActors,
+                AllMovieAwards = new SelectList(allmovieAwards, "Id", "Name").ToList(),
+                AllMovieActors = new SelectList(allmovieActors, "Id", "FullName").ToList(),
+                AllProducers = new SelectList(allmovieProducers, "Id", "Name").ToList()
+            };
 
-            //List<int> selectedAwardsIds = new List<int>();
-            //IEnumerable<Movie_MovieAward> allAwards = _db.Movie_MovieAwards;
-            //foreach (var award in allAwards.Where(a => a.MovieId == movie.Id))
-            //{
-            //    selectedAwardsIds.Add(award.MovieAwardId);
-            //}
-            //movie.SelectedMovieAwardsIds = selectedAwardsIds.ToArray();
-
-            return View(movie);
+            return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(Movie movie)
+        public async Task<IActionResult> Update(UpdateMovieViewModel model)
         {
+            var movie = model.Movie;
             var movieToUpdate = _db.Movies.FirstOrDefault(m => m.Id == movie.Id);
-            if (movieToUpdate == null)
-            {
-                throw new Exception("No such movie could be found!");
-            }
 
-            if (movie.PosterFile == null)
-            {
+            if (movieToUpdate is null || movie is null)
+                return View("Error", "Nullable exception in Movies");
+
+            if (movie.PosterFile is null)
                 movieToUpdate.PosterSource = movieToUpdate.PosterSource;
-            }
             else if (movie.PosterFile.Length > 0 && movie.PosterFile != null)
             {
-                var deletePath = "wwwroot" + movieToUpdate.PosterSource.Substring(1);
-                if (System.IO.File.Exists(deletePath))
+                if (movieToUpdate.PosterSource is not null)
                 {
-                    System.IO.File.Delete(deletePath);
+                    var deletePath = "wwwroot" + movieToUpdate.PosterSource.Substring(1);
+                    if (System.IO.File.Exists(deletePath))
+                        System.IO.File.Delete(deletePath);
                 }
                 var path = Path.Combine(_webHostEnvironment.WebRootPath, "images/posters", movie.PosterFile.FileName);
+
                 using (var memoryStream = new MemoryStream())
                 {
                     await movie.PosterFile.CopyToAsync(memoryStream);
 
-                    // Upload the file if less than 2 MB  
-                    if (memoryStream.Length < 2097152)
-                    {
+                    if (memoryStream.Length < 2097152)// Upload the file if less than 2 MB  
                         movieToUpdate.PosterSource = ChangePicturePath(path);
-                    }
                     else
-                    {
                         ModelState.AddModelError(string.Empty, "The file is too large. It must be under 2 MB");
-                    }
                 }
                 using FileStream stream = new FileStream(path, FileMode.Create);
                 await movie.PosterFile.CopyToAsync(stream);
@@ -277,31 +288,48 @@ namespace MovieLibrary.Controllers
             movieToUpdate.Description = movie.Description;
             movieToUpdate.Category = movie.Category;
 
-            _db.SaveChanges();
-            IEnumerable<Movie_MovieAward> movieAwards = _db.Movie_MovieAwards;
-            IEnumerable<Actor_Movie> movieActors = _db.Actors_Movies;
-            _db.RemoveRange(movieAwards.Where(a => a.MovieId == movie.Id));
-            _db.RemoveRange(movieActors.Where(a => a.MovieId == movie.Id));
+            //If the array of Ids is empty that means that the user wants to leave the movie with the same Actors/Awards/Producer
+            if (model.SelectedMovieProducerId is not null && model.SelectedMovieProducerId is not 0)
+                movieToUpdate.ProducerId = (int)model.SelectedMovieProducerId!;
 
-            foreach (var awardId in movie.SelectedMovieAwardsIds)
+            _db.SaveChanges();
+
+            if (model.SelectedMovieAwardsIds is not null)
             {
-                var newMovieWithAwards = new Movie_MovieAward()
+                var movieAwards = _db.Movie_MovieAwards.ToList();
+
+                _db.RemoveRange(movieAwards.Where(a => a.MovieId == movie.Id));
+
+                foreach (var awardId in model.SelectedMovieAwardsIds)
                 {
-                    MovieId = movie.Id,
-                    MovieAwardId = awardId
-                };
-                _db.Movie_MovieAwards.Add(newMovieWithAwards);
-                _db.SaveChanges();
+                    var newMovieWithAwards = new Movie_MovieAward()
+                    {
+                        MovieId = movie.Id,
+                        MovieAwardId = awardId
+                    };
+
+                    _db.Movie_MovieAwards.Add(newMovieWithAwards);
+                    _db.SaveChanges();
+                }
             }
-            foreach (var actorId in movie.SelectedMovieActorsIds)
+
+            if (model.SelectedMovieActorsIds is not null)
             {
-                var newMovieWithActor = new Actor_Movie()
+                var movieActors = _db.Actors_Movies.ToList();
+
+                _db.RemoveRange(movieActors.Where(a => a.MovieId == movie.Id));
+
+                foreach (var actorId in model.SelectedMovieActorsIds)
                 {
-                    MovieId = movie.Id,
-                    ActorId = actorId
-                };
-                _db.Actors_Movies.Add(newMovieWithActor);
-                _db.SaveChanges();
+                    var newMovieWithActor = new Actor_Movie()
+                    {
+                        MovieId = movie.Id,
+                        ActorId = actorId
+                    };
+
+                    _db.Actors_Movies.Add(newMovieWithActor);
+                    _db.SaveChanges();
+                }
             }
             return RedirectToAction(nameof(Index));
         }
@@ -317,6 +345,16 @@ namespace MovieLibrary.Controllers
 
             if (movie is null)
                 return View("Error", "Nullable exception in Movies");
+
+            //Delete poster from files
+            if (movie.PosterSource is not null)
+            {
+                var deletePath = "wwwroot" + movie.PosterSource.Substring(1);
+                if (System.IO.File.Exists(deletePath))
+                {
+                    System.IO.File.Delete(deletePath);
+                }
+            }
 
             _db.Movies.Remove(movie);
             _db.SaveChanges();
@@ -378,7 +416,7 @@ namespace MovieLibrary.Controllers
         }
         #endregion
 
-        #region Favourit
+        #region Favourite
         [HttpGet]
         public IActionResult Favourite()
         {
@@ -429,32 +467,44 @@ namespace MovieLibrary.Controllers
         [HttpGet]
         public IActionResult BucketList()
         {
-            AppUser user = _db.AppUser.FirstOrDefault(u => u.UserName == User.Identity.Name);
-            List<BucketList> bucketListUserMovies = _db.BucketLists.Where(m => m.AppUserId == user.Id).ToList();
-            List<Movie> movies = new List<Movie>();
-            List<Movie> AllMovies = _db.Movies.ToList();
+            var user = _db.AppUser.FirstOrDefault(u => u.UserName == User.Identity!.Name);
+
+            if (user is null)
+                return View("Error", "Nullable exception in AppUsers");
+
+            var bucketListUserMovies = _db.BucketLists.Where(m => m.AppUserId == user.Id).ToList();
+            var movies = new List<Movie>();
+            var AllMovies = _db.Movies.ToList();
+
+            if (AllMovies is null || bucketListUserMovies is null)
+                return View(movies);
+
             foreach (var movie in bucketListUserMovies)
-            {
-                movies.Add(AllMovies.FirstOrDefault(m => m.Id == movie.MovieId));
-            }
+                movies.Add(AllMovies.First(m => m.Id == movie.MovieId));
+
             return View(movies);
         }
 
         [HttpPost]
         public IActionResult BucketList(int movieId)
         {
-            AppUser user = _db.AppUser.FirstOrDefault(u => u.UserName == User.Identity.Name);
-            BucketList bucketListToAdd = new BucketList()
+            var user = _db.AppUser.FirstOrDefault(u => u.UserName == User.Identity!.Name);
+
+            if (user is null)
+                return View("Error", "Nullable exception in AppUsers");
+
+            var bucketListToAdd = new BucketList()
             {
                 MovieId = movieId,
                 AppUserId = user.Id
             };
+
             if (_db.BucketLists.Contains(bucketListToAdd))
-            {
                 return RedirectToAction(nameof(AllMoviesDetails));
-            }
+
             _db.BucketLists.Add(bucketListToAdd);
             _db.SaveChanges();
+
             return RedirectToAction(nameof(AllMoviesDetails));
         }
 
@@ -497,27 +547,34 @@ namespace MovieLibrary.Controllers
             return View("BucketList");
         }
 
-        public IActionResult Calendar()
-        {
-            return View();
-        }
-
+        #region AddComment
         [HttpPost]
         public IActionResult Comment(MovieDetailsViewModel model)
         {
-            AppUser user = _db.AppUser.FirstOrDefault(u => u.UserName == User.Identity.Name);
-            MovieComment comment = new MovieComment()
+            var user = _db.AppUser.FirstOrDefault(u => u.UserName == User.Identity!.Name);
+
+            if (user is null)
+                return View("Error", "Nullable exception in AppUsers");
+
+            if (string.IsNullOrEmpty(model.Comment))
+                return RedirectToAction("MovieDetails", new { movieId = model.Id });
+
+            var comment = new MovieComment()
             {
                 MovieId = model.Id,
                 AppUserId = user.Id,
                 Text = model.Comment,
                 PostedTime = DateTime.Now
             };
+
             _db.MovieComments.Add(comment);
             _db.SaveChanges();
+
             return RedirectToAction("MovieDetails", new { movieId = comment.MovieId });
         }
+        #endregion
 
+        #region OtherFuncs
         private string GetIdFromYoutubeUrl(string url)
         {
             string[] separatedUrl = url.Split('=');
@@ -536,5 +593,6 @@ namespace MovieLibrary.Controllers
                 return path = "~/" + separatedPath[separatedPath.Count - 2] + "/" + separatedPath[separatedPath.Count - 1];
             }
         }
+        #endregion
     }
 }

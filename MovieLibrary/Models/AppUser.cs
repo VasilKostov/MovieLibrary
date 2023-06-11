@@ -14,22 +14,31 @@ namespace MovieLibrary.Models
         public string LastName { get; set; }
         public int Age { get; set; }
         public string? PictureSource { get; set; }
+
+        //Maybe remove and add them in ViewModel
         [NotMapped]
         public string? RoleId { get; set; }
+
         [NotMapped]
         public string? Role { get; set; }
+
         [NotMapped]
         public IEnumerable<SelectListItem>? RoleList { get; set; }
+
         [NotMapped]
-        public ICollection<MovieComment>? MovieComments { get; set; }
+        public List<MovieComment>? MovieComments { get; set; }
+
         [NotMapped]
-        public ICollection<Movie>? Movies { get; set; }
+        public List<Movie>? Movies { get; set; }
+
         [NotMapped]
-        public ICollection<Actor>? Actors { get; set; }
+        public List<Actor>? Actors { get; set; }
+
         [NotMapped]
-        public ICollection<Favourite>? Favourites { get; set; }
+        public List<Favourite>? Favourites { get; set; }
+
         [NotMapped]
-        public ICollection<BucketList>? BucketLists  { get; set; }
+        public List<BucketList>? BucketLists  { get; set; }
 
 
         //public string Country { get; set; }
