@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using IronPdf;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,7 @@ using NuGet.Protocol;
 using System.Diagnostics.Metrics;
 using System.IO;
 using System.Net;
+using System.Text;
 using System.Xml;
 
 namespace MovieLibrary.Controllers
@@ -193,6 +195,7 @@ namespace MovieLibrary.Controllers
         }
         #endregion
 
+        #region UpdateMovie
         [Authorize(Roles = "Admin,Manager")]
         [HttpGet]
         public IActionResult Update(int movieId)
@@ -333,6 +336,7 @@ namespace MovieLibrary.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
+        #endregion
 
         #region DeleteMovie
         [HttpPost]
@@ -464,6 +468,7 @@ namespace MovieLibrary.Controllers
         }
         #endregion
 
+        #region Bucketlist
         [HttpGet]
         public IActionResult BucketList()
         {
@@ -507,6 +512,7 @@ namespace MovieLibrary.Controllers
 
             return RedirectToAction(nameof(AllMoviesDetails));
         }
+        #endregion
 
         [HttpGet]
         public IActionResult ConvertBucketListToPDf()
@@ -544,7 +550,59 @@ namespace MovieLibrary.Controllers
 
             //var pdf = urlToPdf.RenderUrlAsPdf(uri);
             //pdf.SaveAs(Path.Combine(Directory.GetCurrentDirectory(), "UrlToPdfExample2.Pdf"));
-            return View("BucketList");
+            //return View("BucketList");
+
+            // Get the HTML and CSS content
+            string html = GetBucketListHtml();
+            //string css = GetBucketListCss();
+
+            // Combine HTML and CSS into a single string
+            string combinedContent = $"<html><head><style></style></head><body>{html}</body></html>";
+
+            // Create the PDF document
+            var renderer = new HtmlToPdf();
+            var pdf = renderer.RenderHtmlAsPdf(combinedContent);
+
+            // Return the PDF file as a downloadable attachment
+            return File(pdf.BinaryData, "application/pdf", "bucketlist.pdf");
+        }
+
+
+        private string GetBucketListHtml()
+        {
+            // Replace this with your logic to retrieve the HTML content
+            // You can use Razor templating or build the HTML string programmatically
+            var user = _db.AppUser.FirstOrDefault(u => u.UserName == User.Identity!.Name);
+            var bucketListUserMovies = _db.BucketLists.Where(m => m.AppUserId == user!.Id).ToList();
+            var movies = new List<Movie>();
+            var AllMovies = _db.Movies.ToList();
+
+            foreach (var movie in bucketListUserMovies)
+                movies.Add(AllMovies.First(m => m.Id == movie.MovieId));
+
+            var sb = new StringBuilder();
+
+            sb.Append("</div>");
+
+            foreach (var movie in movies)
+            {
+                sb.Append("<div class=\"container\">");
+                sb.Append($"<img src=\"{movie.PosterSource}\" asp-append-version=\"true\" />");
+                sb.Append(movie.Title);
+                sb.Append(movie.Category);
+                sb.Append(movie.ReleaseDate);
+                sb.Append(movie.MinimumAge);
+                sb.Append("</div>");
+            }
+
+            return sb.ToString();
+        }
+
+        private string GetBucketListCss()
+        {
+            // Replace this with your logic to retrieve the CSS content
+            // You can read the CSS from a file or generate it programmatically
+            return ".container { /* Your CSS styles here */ }";
         }
 
         #region AddComment
