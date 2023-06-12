@@ -524,7 +524,7 @@ namespace MovieLibrary.Controllers
             var renderer = new HtmlToPdf();
             var pdf = renderer.RenderHtmlAsPdf(combinedContent);
 
-            return File(pdf.BinaryDataIncremental, "application/pdf", "bucketlist.pdf");
+            return File(pdf.BinaryDataIncremental, "application/pdf", "Bucketlist.pdf");
         }
 
         private string GetBucketListHtml()
@@ -624,13 +624,9 @@ namespace MovieLibrary.Controllers
   background-color: #f8f9fa;
 }
     ";
+            //string customStyles = ".custom-class { /* Custom styles for .custom-class */ }";
 
-            // Replace this with your logic to retrieve additional CSS content
-            // You can read the CSS from a file or generate it programmatically
-            string customStyles = ".custom-class { /* Custom styles for .custom-class */ }";
-
-            // Combine default styles and custom styles into a single CSS string
-            string cssContent = $"{defaultStyles} {customStyles}";
+            string cssContent = $"{defaultStyles}";
 
             return cssContent;
         }
