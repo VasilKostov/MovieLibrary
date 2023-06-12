@@ -517,60 +517,18 @@ namespace MovieLibrary.Controllers
         [HttpGet]
         public IActionResult ConvertBucketListToPDf()
         {
-            ////var Renderer = new HtmlToPdf();
-            ////Renderer.LoginCredentials.EnableCookies = true;
-            ////Renderer.LoginCredentials.NetworkUsername = "admin@admin.bg";
-            ////Renderer.LoginCredentials.NetworkPassword = "Admin123#";
-            ////Renderer.LoginCredentials.LoginFormUrl = new Uri("https://localhost:7192/Account/Login");
-            ////using var PDF = Renderer.RenderUrlAsPdf("https://localhost:7192/Movie/BucketList");
-            ////var contentLength = PDF.BinaryData.Length;
-
-            ////Response.Headers["Content-Length"] = contentLength.ToString();
-            ////Response.Headers.Add("Content-Disposition", "inline; filename=Document_"+".pdf");
-
-            ////return File(PDF.BinaryData, "application/pdf;");
-            //var uri = new Uri("https://localhost:7192/Movie/BucketList");
-            //var urlToPdf = new ChromePdfRenderer
-            //{
-            //    RenderingOptions = new ChromePdfRenderOptions()
-            //    {
-            //        MarginTop = 50,
-            //        MarginBottom = 50,
-            //        CssMediaType = IronPdf.Rendering.PdfCssMediaType.Print
-            //    },
-
-            //    // setting login credentials to bypass basic authentication
-            //    LoginCredentials = new IronPdf.ChromeHttpLoginCredentials
-            //    {
-            //        NetworkUsername = "admin@admin.bg",
-            //        NetworkPassword = "Admin123#",
-            //        LoginFormUrl = new Uri("https://localhost:7192/Account/Login")
-            //    }
-            //};
-
-            //var pdf = urlToPdf.RenderUrlAsPdf(uri);
-            //pdf.SaveAs(Path.Combine(Directory.GetCurrentDirectory(), "UrlToPdfExample2.Pdf"));
-            //return View("BucketList");
-
-            // Get the HTML and CSS content
             string html = GetBucketListHtml();
-            //string css = GetBucketListCss();
 
-            // Combine HTML and CSS into a single string
             string combinedContent = $"<html><head><style></style></head><body>{html}</body></html>";
 
-            // Create the PDF document
             var renderer = new HtmlToPdf();
             var pdf = renderer.RenderHtmlAsPdf(combinedContent);
 
-            // Return the PDF file as a downloadable attachment
-            return File(pdf.BinaryData, "application/pdf", "bucketlist.pdf");
+            return File(pdf.BinaryDataIncremental, "application/pdf", "bucketlist.pdf");
         }
 
         private string GetBucketListHtml()
         {
-            // Replace this with your logic to retrieve the HTML content
-            // You can use Razor templating or build the HTML string programmatically
             var user = _db.AppUser.FirstOrDefault(u => u.UserName == User.Identity!.Name);
             var bucketListUserMovies = _db.BucketLists.Where(m => m.AppUserId == user!.Id).ToList();
             var movies = new List<Movie>();
@@ -583,12 +541,12 @@ namespace MovieLibrary.Controllers
 
             sb.Append("<div class=\"row\">");
             sb.Append("<div class=\"col-6\">");
-            sb.Append("<h2 class=\"text-primary\">User List</h2>");
+            sb.Append("<h2 class=\"text-primary\">Bucketlist</h2>");
             sb.Append("</div>");
             sb.Append("</div>");
             sb.Append("<div class=\"p-4 border rounded\">");
 
-            if (movies.Count() > 0)
+            if (movies.Count() > 0 && movies is not null)
             {
                 sb.Append("<table class=\"table table-striped border\">");
                 sb.Append("<tr class=\"table-secondary\">");

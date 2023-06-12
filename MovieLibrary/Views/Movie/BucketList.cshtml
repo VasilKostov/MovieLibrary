@@ -1,16 +1,22 @@
 ﻿@model List<MovieLibrary.Models.Movies.Movie>
 
-
-<div class="text-center">
-    <a asp-action="ConvertBucketListToPDf">Dowload</a>
-</div>
-@foreach (var movie in Model)
+@if (Model.Count > 0 && Model is not null)
 {
-    <div class="container">
-        <img src="@movie.PosterSource" asp-append-version="true" />
-        @movie.Title
-        @movie.Category
-        @movie.ReleaseDate
-        @movie.MinimumAge
+    <div class="text-center">
+        <a asp-action="ConvertBucketListToPDf">Dowload your Bucketlist</a>
     </div>
+    @foreach (var movie in Model)
+    {
+        <div class="container">
+            <img src="@movie.PosterSource" asp-append-version="true" />
+            @movie.Title
+            @movie.Category
+            @movie.ReleaseDate
+            @movie.MinimumAge
+        </div>
+    }
+}
+else
+{
+    <h3>Nothing added to your Bucketlist of movies you would want to watch in the future!</h3>
 }
