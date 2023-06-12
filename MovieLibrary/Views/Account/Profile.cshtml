@@ -179,9 +179,9 @@
     </div>
     <br />
     <div>
-        <h5>Created movies: @Model.CreatedMovies.Count()</h5>
+        <h5>Created movies: @Model.CreatedMovies!.Count()</h5>
         <br />
-        @if (Model.CreatedMovies.Count() > 0)
+        @if (Model.CreatedMovies!.Count() > 0)
         {
             <table class="table table-striped border">
                 <tr style="background-color: #FF4B2B;">

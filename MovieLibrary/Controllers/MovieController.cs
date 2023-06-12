@@ -518,8 +518,9 @@ namespace MovieLibrary.Controllers
         public IActionResult ConvertBucketListToPDf()
         {
             string html = GetBucketListHtml();
+            string css = GetBucketListCss();
 
-            string combinedContent = $"<html><head><style></style></head><body>{html}</body></html>";
+            string combinedContent = $"<html><head><style>{css}</style></head><body>{html}</body></html>";
 
             var renderer = new HtmlToPdf();
             var pdf = renderer.RenderHtmlAsPdf(combinedContent);
@@ -552,9 +553,9 @@ namespace MovieLibrary.Controllers
                 sb.Append("<tr class=\"table-secondary\">");
                 sb.Append("<th>Title</th>");
                 sb.Append("<th>Minimum age</th>");
-                sb.Append("<th>Release year</th>");
+                sb.Append("<th>Released year</th>");
                 sb.Append("<th>Genre</th>");
-                sb.Append("<th></th>");
+                sb.Append("<th>Rating</th>");
                 sb.Append("</tr>");
 
                 foreach (var movie in movies)
@@ -564,7 +565,7 @@ namespace MovieLibrary.Controllers
                     sb.Append($"<td>{movie.MinimumAge}</td>");
                     sb.Append($"<td>{movie.GetYear(movie.ReleaseDate)}</td>");
                     sb.Append($"<td>{movie.Category}</td>");
-                    sb.Append("<td>");
+                    sb.Append($"<td>{movie.Rating}</td>");
                     sb.Append("<div class=\"text-center\">");
                     sb.Append("</div>");
                     sb.Append("</td>");
@@ -582,48 +583,29 @@ namespace MovieLibrary.Controllers
         private string GetBucketListCss()
         {
             // Default CSS styles for the classes
-            string defaultStyles = @"
-        .row {
-            display: flex;
-            flex-wrap: wrap;
-            margin-right: -15px;
-            margin-left: -15px;
-        }
-        .col-6 {
-  flex-basis: 50%;
-  max-width: 50%;
-}
-
-.text-primary {
-  color: #007bff;
-}
-
-.p-4 {
-  padding: 1rem;
-}
-
-.border {
-  border: 1px solid #dee2e6;
-}
-
-.rounded {
-  border-radius: 0.25rem;
-}
-
-.table {
+            string defaultStyles = @".table {
   width: 100%;
-  margin-bottom: 1rem;
-  color: #212529;
+  border-collapse: collapse;
 }
 
-.table-striped {
-  background-color: rgba(0, 0, 0, 0.05);
+.table th,
+.table td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ccc;
 }
 
-.table-secondary {
-  background-color: #f8f9fa;
+.table th {
+  background-color: #f2f2f2;
 }
-    ";
+
+.table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.table tr:hover {
+  background-color: #e6e6e6;
+}";
             //string customStyles = ".custom-class { /* Custom styles for .custom-class */ }";
 
             string cssContent = $"{defaultStyles}";
