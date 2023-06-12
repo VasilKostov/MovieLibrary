@@ -567,7 +567,6 @@ namespace MovieLibrary.Controllers
             return File(pdf.BinaryData, "application/pdf", "bucketlist.pdf");
         }
 
-
         private string GetBucketListHtml()
         {
             // Replace this with your logic to retrieve the HTML content
@@ -582,27 +581,100 @@ namespace MovieLibrary.Controllers
 
             var sb = new StringBuilder();
 
+            sb.Append("<div class=\"row\">");
+            sb.Append("<div class=\"col-6\">");
+            sb.Append("<h2 class=\"text-primary\">User List</h2>");
             sb.Append("</div>");
+            sb.Append("</div>");
+            sb.Append("<div class=\"p-4 border rounded\">");
 
-            foreach (var movie in movies)
+            if (movies.Count() > 0)
             {
-                sb.Append("<div class=\"container\">");
-                sb.Append($"<img src=\"{movie.PosterSource}\" asp-append-version=\"true\" />");
-                sb.Append(movie.Title);
-                sb.Append(movie.Category);
-                sb.Append(movie.ReleaseDate);
-                sb.Append(movie.MinimumAge);
-                sb.Append("</div>");
+                sb.Append("<table class=\"table table-striped border\">");
+                sb.Append("<tr class=\"table-secondary\">");
+                sb.Append("<th>Title</th>");
+                sb.Append("<th>Minimum age</th>");
+                sb.Append("<th>Release year</th>");
+                sb.Append("<th>Genre</th>");
+                sb.Append("<th></th>");
+                sb.Append("</tr>");
+
+                foreach (var movie in movies)
+                {
+                    sb.Append("<tr>");
+                    sb.Append($"<td>{movie.Title}</td>");
+                    sb.Append($"<td>{movie.MinimumAge}</td>");
+                    sb.Append($"<td>{movie.GetYear(movie.ReleaseDate)}</td>");
+                    sb.Append($"<td>{movie.Category}</td>");
+                    sb.Append("<td>");
+                    sb.Append("<div class=\"text-center\">");
+                    sb.Append("</div>");
+                    sb.Append("</td>");
+                    sb.Append("</tr>");
+                }
+
+                sb.Append("</table>");
             }
+
+            sb.Append("</div>");
 
             return sb.ToString();
         }
 
         private string GetBucketListCss()
         {
-            // Replace this with your logic to retrieve the CSS content
+            // Default CSS styles for the classes
+            string defaultStyles = @"
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-right: -15px;
+            margin-left: -15px;
+        }
+        .col-6 {
+  flex-basis: 50%;
+  max-width: 50%;
+}
+
+.text-primary {
+  color: #007bff;
+}
+
+.p-4 {
+  padding: 1rem;
+}
+
+.border {
+  border: 1px solid #dee2e6;
+}
+
+.rounded {
+  border-radius: 0.25rem;
+}
+
+.table {
+  width: 100%;
+  margin-bottom: 1rem;
+  color: #212529;
+}
+
+.table-striped {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.table-secondary {
+  background-color: #f8f9fa;
+}
+    ";
+
+            // Replace this with your logic to retrieve additional CSS content
             // You can read the CSS from a file or generate it programmatically
-            return ".container { /* Your CSS styles here */ }";
+            string customStyles = ".custom-class { /* Custom styles for .custom-class */ }";
+
+            // Combine default styles and custom styles into a single CSS string
+            string cssContent = $"{defaultStyles} {customStyles}";
+
+            return cssContent;
         }
 
         #region AddComment

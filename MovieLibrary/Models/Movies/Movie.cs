@@ -38,5 +38,10 @@ namespace MovieLibrary.Models.Movies
 
         [ForeignKey("ProducerId")]
         public Producer Producer { get; set; }
+
+        public int GetYear(DateTime releaseDate)
+        {
+            return releaseDate.Year;
+        }
     }
 }
