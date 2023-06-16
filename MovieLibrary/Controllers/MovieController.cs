@@ -512,8 +512,31 @@ namespace MovieLibrary.Controllers
 
             return RedirectToAction(nameof(AllMoviesDetails));
         }
+
+        [HttpPost]
+        public IActionResult DeleteMovieFromBucketList(int? movieId)
+        {
+            var user = _db.AppUser.FirstOrDefault(u => u.UserName == User.Identity!.Name);
+
+            if (user is null)
+                return View("Error", "Nullable exception in AppUsers");
+
+            if (movieId is not null && movieId != 0)
+            {
+                var movie = _db.BucketLists.Where(b => b.MovieId == movieId && b.AppUserId == user.Id).FirstOrDefault();
+
+                if (movie is not null)
+                {
+                    _db.BucketLists.Remove(movie);
+                    _db.SaveChanges();
+                }
+            }
+
+            return RedirectToAction(nameof(BucketList));
+        }
         #endregion
 
+        #region PDFDowloader
         [HttpGet]
         public IActionResult ConvertBucketListToPDf()
         {
@@ -527,91 +550,7 @@ namespace MovieLibrary.Controllers
 
             return File(pdf.BinaryDataIncremental, "application/pdf", "Bucketlist.pdf");
         }
-
-        private string GetBucketListHtml()
-        {
-            var user = _db.AppUser.FirstOrDefault(u => u.UserName == User.Identity!.Name);
-            var bucketListUserMovies = _db.BucketLists.Where(m => m.AppUserId == user!.Id).ToList();
-            var movies = new List<Movie>();
-            var AllMovies = _db.Movies.ToList();
-
-            foreach (var movie in bucketListUserMovies)
-                movies.Add(AllMovies.First(m => m.Id == movie.MovieId));
-
-            var sb = new StringBuilder();
-
-            sb.Append("<div class=\"row\">");
-            sb.Append("<div class=\"col-6\">");
-            sb.Append("<h2 class=\"text-primary\">Bucketlist</h2>");
-            sb.Append("</div>");
-            sb.Append("</div>");
-            sb.Append("<div class=\"p-4 border rounded\">");
-
-            if (movies.Count() > 0 && movies is not null)
-            {
-                sb.Append("<table class=\"table table-striped border\">");
-                sb.Append("<tr class=\"table-secondary\">");
-                sb.Append("<th>Title</th>");
-                sb.Append("<th>Minimum age</th>");
-                sb.Append("<th>Released year</th>");
-                sb.Append("<th>Genre</th>");
-                sb.Append("<th>Rating</th>");
-                sb.Append("</tr>");
-
-                foreach (var movie in movies)
-                {
-                    sb.Append("<tr>");
-                    sb.Append($"<td>{movie.Title}</td>");
-                    sb.Append($"<td>{movie.MinimumAge}</td>");
-                    sb.Append($"<td>{movie.GetYear(movie.ReleaseDate)}</td>");
-                    sb.Append($"<td>{movie.Category}</td>");
-                    sb.Append($"<td>{movie.Rating}</td>");
-                    sb.Append("<div class=\"text-center\">");
-                    sb.Append("</div>");
-                    sb.Append("</td>");
-                    sb.Append("</tr>");
-                }
-
-                sb.Append("</table>");
-            }
-
-            sb.Append("</div>");
-
-            return sb.ToString();
-        }
-
-        private string GetBucketListCss()
-        {
-            // Default CSS styles for the classes
-            string defaultStyles = @".table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.table th,
-.table td {
-  padding: 10px;
-  text-align: left;
-  border: 1px solid #ccc;
-}
-
-.table th {
-  background-color: #f2f2f2;
-}
-
-.table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.table tr:hover {
-  background-color: #e6e6e6;
-}";
-            //string customStyles = ".custom-class { /* Custom styles for .custom-class */ }";
-
-            string cssContent = $"{defaultStyles}";
-
-            return cssContent;
-        }
+        #endregion
 
         #region AddComment
         [HttpPost]
@@ -658,6 +597,90 @@ namespace MovieLibrary.Controllers
             {
                 return path = "~/" + separatedPath[separatedPath.Count - 2] + "/" + separatedPath[separatedPath.Count - 1];
             }
+        }
+
+        private string GetBucketListHtml()
+        {
+            var user = _db.AppUser.FirstOrDefault(u => u.UserName == User.Identity!.Name);
+            var bucketListUserMovies = _db.BucketLists.Where(m => m.AppUserId == user!.Id).ToList();
+            var movies = new List<Movie>();
+            var AllMovies = _db.Movies.ToList();
+
+            foreach (var movie in bucketListUserMovies)
+                movies.Add(AllMovies.First(m => m.Id == movie.MovieId));
+
+            var sb = new StringBuilder();
+
+            sb.Append("<div class=\"row\">");
+            sb.Append("<div class=\"col-6\">");
+            sb.Append("<h2 class=\"text-primary\">Bucketlist</h2>");
+            sb.Append("</div>");
+            sb.Append("</div>");
+            sb.Append("<div class=\"p-4 border rounded\">");
+
+            if (movies.Count() > 0 && movies is not null)
+            {
+                sb.Append("<table class=\"table table-striped border\">");
+                sb.Append("<tr class=\"table-secondary\">");
+                sb.Append("<th>Title</th>");
+                sb.Append("<th>Released year</th>");
+                sb.Append("<th>Genre</th>");
+                sb.Append("<th>Rating</th>");
+                sb.Append("<th>Minimum age</th>");
+                sb.Append("</tr>");
+
+                foreach (var movie in movies)
+                {
+                    sb.Append("<tr>");
+                    sb.Append($"<td>{movie.Title}</td>");
+                    sb.Append($"<td>{movie.GetYear(movie.ReleaseDate)}</td>");
+                    sb.Append($"<td>{movie.Category}</td>");
+                    sb.Append($"<td>{movie.Rating}</td>");
+                    sb.Append($"<td>{movie.MinimumAge}</td>");
+                    sb.Append("<div class=\"text-center\">");
+                    sb.Append("</div>");
+                    sb.Append("</td>");
+                    sb.Append("</tr>");
+                }
+
+                sb.Append("</table>");
+            }
+
+            sb.Append("</div>");
+
+            return sb.ToString();
+        }
+
+        private string GetBucketListCss()
+        {
+            // Default CSS styles for the classes
+            string defaultStyles = @".table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ccc;
+}
+
+.table th {
+  background-color: #f2f2f2;
+}
+
+.table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.table tr:hover {
+  background-color: #e6e6e6;
+}";
+
+            string cssContent = $"{defaultStyles}";
+
+            return cssContent;
         }
         #endregion
     }
