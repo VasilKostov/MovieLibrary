@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.DotNet.Scaffolding.Shared.Project;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
+using MovieLibrary.Contracts;
 using MovieLibrary.Data;
 using MovieLibrary.Models;
 using MovieLibrary.Models.Actors;
 using MovieLibrary.Models.Movies;
 using MovieLibrary.Models.Relations;
+using MovieLibrary.Singleton;
 using MovieLibrary.ViewModels;
 using MovieLibrary.ViewModels.MovieViewModels;
 using NuGet.Configuration;
@@ -24,27 +26,28 @@ using System.Xml;
 
 namespace MovieLibrary.Controllers
 {
-    [Authorize]
-    public class MovieController : Controller
+    public class MovieController : BaseController
     {
+        private readonly IMovieService movieService;
         private readonly ApplicationDbContext _db;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public MovieController(ApplicationDbContext db, IWebHostEnvironment webHostEnvironment)
+        public MovieController(ApplicationDbContext db, IWebHostEnvironment webHostEnvironment, IMovieService movieService)
         {
             _db = db;
             _webHostEnvironment = webHostEnvironment;
+            this.movieService = movieService;
         }
 
         #region Movies
         [HttpGet]
-        public IActionResult AllMoviesDetails()
+        public async Task<IActionResult> AllMovies()
         {
-            var user = _db.Users.FirstOrDefault(u => u.UserName == User.Identity!.Name);
+            var user = await movieService.GetUserById(GetUserId());
 
             if (user is null)
-                return View("Error", "Nullable exception in AppUsers");
+                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
 
-            var movies = _db.Movies.Where(m => m.MinimumAge <= user.Age && m.Accepted == true).ToList();
+            var movies = await movieService.GetAllMovies(user);
 
             return View(movies);
         }
@@ -52,17 +55,17 @@ namespace MovieLibrary.Controllers
 
         #region Movie
         [HttpGet]
-        public IActionResult MovieDetails(int? movieId)
+        public async Task<IActionResult> MovieDetails(int? movieId)
         {
-            if (movieId is null)
-                return View("Error", "Nullable exception in AppUsers");
+            if (movieId is null || movieId is 0)
+                return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
 
-            var movie = _db.Movies.FirstOrDefault(m => m.Id == movieId);
+            var movie = await movieService.GetMovieById((int)movieId);
 
             if (movie is null)
-                return View("Error", "Nullable exception in Movies");
+                return RedirectToAction("Error", "Error", ErrorCode.NullMovie);
 
-            var comments = _db.MovieComments.Where(c => c.MovieId == movie.Id).ToList();
+            var comments = await movieService.GetCommentByMovieId(movie.Id);
 
             var model = new MovieDetailsViewModel()
             {
@@ -84,45 +87,40 @@ namespace MovieLibrary.Controllers
         }
         #endregion
 
-        #region Waitlist
-        public IActionResult Index()
+        #region MovieList
+        public async Task<IActionResult> MovieList()
         {
-            var movieList = _db.Movies.Where(m => m.Accepted == true).OrderByDescending(u => u.AppUserId).ThenBy(u => u.Category).ToList();
-            var movieAndRole = new List<(string, Movie)>();
+            var movies = await movieService.GetMovies();
+            var model = await movieService.SetMovieAndRole(movies);
 
-            foreach (var movie in movieList)
-            {
-                var roleId = _db.UserRoles.Where(r => r.UserId == movie.AppUserId).First().RoleId;
-                var role = _db.Roles.Where(r => r.Id == roleId).First().Name;
-                movieAndRole.Add((role!, movie));
-            }
-
-            return View(movieAndRole);
+            return View(model);
         }
         #endregion
 
         #region CreateMovie
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             var model = new CreateMovieViewModel();
 
-            List<MovieAward> movieAwards = _db.MovieAwards.ToList();
-            List<Producer> movieProducers = _db.Producers.ToList();
-            List<Actor> movieActors = _db.Actors.ToList();
-            model.AllMovieAwards = new SelectList(movieAwards, "Id", "Name").ToList();
-            model.AllProducers = new SelectList(movieProducers, "Id", "Name").ToList();
-            model.AllMovieActors = new SelectList(movieActors, "Id", "FullName").ToList();
+            var awards = await movieService.GetAwards();
+            var producers = await movieService.GetProducers();
+            var actors = await movieService.GetActors();
+
+            model.AllMovieAwards = new SelectList(awards, "Id", "Name").ToList();
+            model.AllProducers = new SelectList(producers, "Id", "Name").ToList();
+            model.AllMovieActors = new SelectList(actors, "Id", "FullName").ToList();
+
             return View(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(CreateMovieViewModel model)
         {
-            AppUser? user = _db.Users.FirstOrDefault(u => u.UserName == User.Identity!.Name);
+            var user = await movieService.GetUserById(GetUserId());
 
             if (user is null)
-                return View("Error", "Nullable exception");
+                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
 
             var newMovie = new Movie()
             {
@@ -164,34 +162,11 @@ namespace MovieLibrary.Controllers
                 stream.Close();
             }
 
-            _db.Movies.Add(newMovie);
-            _db.SaveChanges();
+            await movieService.CreateMovie(newMovie);
+            await movieService.AddMovieAwards(model.SelectedMovieAwardsIds, newMovie.Id);
+            await movieService.AddActors(model.SelectedMovieActorsIds, newMovie.Id);
 
-            foreach (var awardId in model.SelectedMovieAwardsIds)
-            {
-                var newMovieWithAwards = new Movie_MovieAward()
-                {
-                    MovieId = newMovie.Id,
-                    MovieAwardId = awardId
-                };
-
-                _db.Movie_MovieAwards.Add(newMovieWithAwards);
-                _db.SaveChanges();
-            }
-
-            foreach (var actorId in model.SelectedMovieActorsIds)
-            {
-                Actor_Movie newMovieWithActor = new Actor_Movie()
-                {
-                    MovieId = newMovie.Id,
-                    ActorId = actorId
-                };
-
-                _db.Actors_Movies.Add(newMovieWithActor);
-                _db.SaveChanges();
-            }
-
-            return RedirectToAction(nameof(Create));
+            return RedirectToAction("Create");
         }
         #endregion
 
@@ -340,30 +315,27 @@ namespace MovieLibrary.Controllers
 
         #region DeleteMovie
         [HttpPost]
-        public IActionResult Delete(int? movieId)
+        public async Task<IActionResult> Delete(int? movieId)
         {
             if (movieId is null || movieId is 0)
-                return View("Error", "Nullable exception in Movies");
+                return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
 
-            var movie = _db.Movies.FirstOrDefault(u => u.Id == movieId);
+            var movie = await movieService.GetMovieById((int)movieId);
 
             if (movie is null)
-                return View("Error", "Nullable exception in Movies");
+                return RedirectToAction("Error", "Error", ErrorCode.NullMovie);
 
             //Delete poster from files
             if (movie.PosterSource is not null)
             {
                 var deletePath = "wwwroot" + movie.PosterSource.Substring(1);
                 if (System.IO.File.Exists(deletePath))
-                {
                     System.IO.File.Delete(deletePath);
-                }
             }
 
-            _db.Movies.Remove(movie);
-            _db.SaveChanges();
+            await movieService.DeleteMovie(movie);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index");
         }
         #endregion
 
@@ -459,12 +431,12 @@ namespace MovieLibrary.Controllers
             };
 
             if (_db.Favourites.Contains(favouriteMovieToAdd))
-                return RedirectToAction(nameof(AllMoviesDetails));
+                return RedirectToAction(nameof(AllMovies));
 
             _db.Favourites.Add(favouriteMovieToAdd);
             _db.SaveChanges();
 
-            return RedirectToAction(nameof(AllMoviesDetails));
+            return RedirectToAction(nameof(AllMovies));
         }
         #endregion
 
@@ -505,12 +477,12 @@ namespace MovieLibrary.Controllers
             };
 
             if (_db.BucketLists.Contains(bucketListToAdd))
-                return RedirectToAction(nameof(AllMoviesDetails));
+                return RedirectToAction(nameof(AllMovies));
 
             _db.BucketLists.Add(bucketListToAdd);
             _db.SaveChanges();
 
-            return RedirectToAction(nameof(AllMoviesDetails));
+            return RedirectToAction(nameof(AllMovies));
         }
 
         [HttpPost]

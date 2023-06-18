@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MovieLibrary.Models;
+using MovieLibrary.Singleton;
+using MovieLibrary.ViewModels;
 using System.Diagnostics;
 
 namespace MovieLibrary.Controllers
@@ -26,7 +28,7 @@ namespace MovieLibrary.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier, ErrorCode = (int)ErrorCode.DefaultError });
         }
     }
 }
