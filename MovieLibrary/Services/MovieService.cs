@@ -79,18 +79,21 @@ namespace MovieLibrary.Services
                     m.ProducerId == movie.ProducerId);
         }
 
-        public async Task AddMovieAwards(int[] awardsIds, int movieId)
+        public async Task AddMovieAwards(int[]? awardsIds, int movieId)
         {
-            foreach (var id in awardsIds)
+            if (awardsIds is not null || awardsIds!.Length > 0)
             {
-                var newMovieWithAwards = new Movie_MovieAward()
+                foreach (var id in awardsIds)
                 {
-                    MovieId = movieId,
-                    MovieAwardId = id
-                };
+                    var newMovieWithAwards = new Movie_MovieAward()
+                    {
+                        MovieId = movieId,
+                        MovieAwardId = id
+                    };
 
-                await db.Movie_MovieAwards.AddAsync(newMovieWithAwards);
-                await db.SaveChangesAsync();
+                    await db.Movie_MovieAwards.AddAsync(newMovieWithAwards);
+                    await db.SaveChangesAsync();
+                }
             }
         }
 
@@ -160,6 +163,60 @@ namespace MovieLibrary.Services
             var role = await db.Roles.Where(r => r.Id == userRole.RoleId).FirstAsync();
 
             return role.Name;
+        }
+
+        public async Task<MovieComment?> GetComment(int commentId)
+        {
+            return await db.MovieComments.FirstOrDefaultAsync(u => u.Id == commentId);
+        }
+
+        public async Task DeleteComment(MovieComment? comment)
+        {
+            if (comment is not null)
+            {
+                db.Remove(comment);
+                await db.SaveChangesAsync();
+            }
+        }
+
+        /// <summary>
+        /// Gets the actors which are playing a certain movie
+        /// </summary>
+        public async Task<List<Actor>> GetActors(int movieId)
+        {
+            var actorMovies = await db.Actors_Movies.Where(am => movieId == am.MovieId).ToListAsync();
+            var actors = new List<Actor>();
+
+            foreach (var am in actorMovies)
+                actors.Add(await GetActor(am.ActorId));
+
+            return actors;
+        }
+
+        public async Task<Actor> GetActor(int actorId)
+        {
+            return await db.Actors.Where(a => a.Id == actorId).FirstAsync();
+        }
+
+        public async Task<Producer> GetProducer(int producerId)
+        {
+            return await db.Producers.Where(p => p.Id == producerId).FirstAsync();
+        }
+
+        public async Task<List<MovieAward>?> GetAwards(int movieId)
+        {
+            var movieAwards = await db.Movie_MovieAwards.Where(ma => movieId == ma.MovieId).ToListAsync();
+            var awards = new List<MovieAward>();
+
+            foreach (var ma in movieAwards)
+                awards.Add(await GetMovieAward(ma.MovieAwardId));
+
+            return awards;
+        }
+
+        public async Task<MovieAward> GetMovieAward(int awardId)
+        {
+            return await db.MovieAwards.Where(a => a.Id == awardId).FirstAsync();
         }
     }
 }

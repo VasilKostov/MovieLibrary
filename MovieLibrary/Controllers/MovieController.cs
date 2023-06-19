@@ -173,43 +173,25 @@ namespace MovieLibrary.Controllers
         #region UpdateMovie
         [Authorize(Roles = "Admin,Manager")]
         [HttpGet]
-        public IActionResult Update(int movieId)
+        public async Task<IActionResult> Update(int? movieId)
         {
-            var movie = _db.Movies.FirstOrDefault(u => u.Id == movieId);
-            var allmovieAwards = _db.MovieAwards.ToList();
-            var allmovieProducers = _db.Producers.ToList();
-            var allmovieActors = _db.Actors.ToList();
+            if (movieId is null || movieId is 0)
+                return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
+
+            var movie = await movieService.GetMovieById((int)movieId);
+            var allmovieAwards = await movieService.GetAwards();
+            var allmovieProducers = await movieService.GetProducers();
+            var allmovieActors = await movieService.GetActors();
 
             if (movie is null)
-                return View("Error", "Nullable exception in Movies");
+                return RedirectToAction("Error", "Error", ErrorCode.NullMovie);
 
-            //Getting the ids of actors and awards
-            var selectedActorsIds = new List<int>();
-            var allActors = _db.Actors_Movies.ToList();
+            //Getting actors, producer and awards which are already in the movie
+            var movieActors = await movieService.GetActors(movie.Id);
+            var movieAwards = await movieService.GetAwards(movie.Id);
+            var movieProducer = await movieService.GetProducer(movie.ProducerId);
 
-            foreach (var actor in allActors.Where(a => a.MovieId == movie.Id))
-                selectedActorsIds.Add(actor.ActorId);
-
-            var selectedAwardsIds = new List<int>();
-            var allAwards = _db.Movie_MovieAwards.ToList();
-
-            foreach (var award in allAwards.Where(a => a.MovieId == movie.Id))
-                selectedAwardsIds.Add(award.MovieAwardId);
-
-            //Getting the actual obj
-            var movieProducer = _db.Producers.First(p => p.Id == movie.ProducerId);
-
-            var movieActors = new List<Actor>();
-
-            foreach (var actorId in selectedActorsIds)
-                movieActors.Add(allmovieActors.First(i => i.Id == actorId));
-
-            var movieAwards = new List<MovieAward>();
-
-            foreach (var awardId in selectedAwardsIds)
-                movieAwards.Add(allmovieAwards.First(i => i.Id == awardId));
-
-            var viewModel = new UpdateMovieViewModel()
+            var model = new UpdateMovieViewModel()
             {
                 Movie = movie,
                 Producer = movieProducer,
@@ -220,7 +202,7 @@ namespace MovieLibrary.Controllers
                 AllProducers = new SelectList(allmovieProducers, "Id", "Name").ToList()
             };
 
-            return View(viewModel);
+            return View(model);
         }
 
         [HttpPost]
@@ -341,19 +323,17 @@ namespace MovieLibrary.Controllers
 
         #region DeleteComment
         [HttpPost]
-        public IActionResult DeleteComment(int? commentId)
+        public async Task<IActionResult> DeleteComment(int? commentId)
         {
             if (commentId is null || commentId is 0)
-                return View("Error", "Nullable exception in Comments");
+                return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
 
-            var comment = _db.MovieComments.FirstOrDefault(u => u.Id == commentId);
+            var comment = await movieService.GetComment((int)commentId);
+
             if (comment is null)
-                return View("Error", "Nullable exception in Comments");
+                return RedirectToAction("Error", "Error", ErrorCode.NullComment);
 
-            int movieId = comment.MovieId;
-
-            _db.MovieComments.Remove(comment);
-            _db.SaveChanges();
+            await movieService.DeleteComment(comment);
 
             return RedirectToAction("MovieDetails", new { movieId = comment.MovieId });
         }

@@ -21,6 +21,13 @@ namespace MovieLibrary.Models.Movies
         public string? PosterSource { get; set; }
         public bool Accepted { get; set; }
         public string? TrailerUrl { get; set; }
+        public int ProducerId { get; set; }
+
+        [ForeignKey("ProducerId")]
+        public Producer Producer { get; set; }
+
+        [EnumDataType(typeof(MovieCategory))]
+        public MovieCategory Category { get; set; }
 
         [NotMapped]
         public IFormFile? PosterFile { get; set; }
@@ -32,12 +39,7 @@ namespace MovieLibrary.Models.Movies
         public List<Favourite> Favourites { get; set; }
         public List<BucketList> BucketLists { get; set; }
 
-        [EnumDataType(typeof(MovieCategory))]
-        public MovieCategory Category { get; set; }
-        public int ProducerId { get; set; }
 
-        [ForeignKey("ProducerId")]
-        public Producer Producer { get; set; }
 
         public int GetYear(DateTime releaseDate)
         {

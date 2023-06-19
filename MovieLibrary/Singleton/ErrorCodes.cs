@@ -7,6 +7,7 @@
         NullParameter= 2,
         NullMovie = 3,
         NullActor = 4,
+        NullComment = 5,
     }
 
     public static class ErrorCodes
@@ -18,6 +19,7 @@
             [(int)ErrorCode.NullParameter] = "Null parameter given",
             [(int)ErrorCode.NullMovie] = "Null exception in Movies",
             [(int)ErrorCode.NullActor] = "Null exception in Actors",
+            [(int)ErrorCode.NullComment] = "Null exception in Comment",
         };
     }
 }

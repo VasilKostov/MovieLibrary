@@ -24,8 +24,8 @@ namespace MovieLibrary.ViewModels.MovieViewModels
 
         public MovieCategory Category { get; set; }
 
-        public List<SelectListItem> AllMovieAwards { get; set; }
-        public int[] SelectedMovieAwardsIds { get; set; }
+        public List<SelectListItem>? AllMovieAwards { get; set; }
+        public int[]? SelectedMovieAwardsIds { get; set; }
 
         public List<SelectListItem> AllMovieActors { get; set; }
         public int[] SelectedMovieActorsIds { get; set; }

@@ -7,7 +7,7 @@ namespace MovieLibrary.ViewModels.MovieViewModels
     public class UpdateMovieViewModel
     {
         public Movie Movie { get; set; }
-        public List<MovieAward> Awards { get; set; }
+        public List<MovieAward>? Awards { get; set; }
         public List<Actor> Actors { get; set; }
         public Producer Producer { get; set; }
 
