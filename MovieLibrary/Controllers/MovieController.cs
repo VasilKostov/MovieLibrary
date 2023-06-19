@@ -28,26 +28,26 @@ namespace MovieLibrary.Controllers
 {
     public class MovieController : BaseController
     {
-        private readonly IMovieService movieService;
+        private readonly IMovieService MService;
         private readonly ApplicationDbContext _db;
         private readonly IWebHostEnvironment _webHostEnvironment;
         public MovieController(ApplicationDbContext db, IWebHostEnvironment webHostEnvironment, IMovieService movieService)
         {
             _db = db;
             _webHostEnvironment = webHostEnvironment;
-            this.movieService = movieService;
+            this.MService = movieService;
         }
 
         #region Movies
         [HttpGet]
         public async Task<IActionResult> AllMovies()
         {
-            var user = await movieService.GetUserById(GetUserId());
+            var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
                 return RedirectToAction("Error", "Error", ErrorCode.NullUser);
 
-            var movies = await movieService.GetAllMovies(user);
+            var movies = await MService.GetAllMovies(user);
 
             return View(movies);
         }
@@ -60,12 +60,12 @@ namespace MovieLibrary.Controllers
             if (movieId is null || movieId is 0)
                 return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
 
-            var movie = await movieService.GetMovieById((int)movieId);
+            var movie = await MService.GetMovieById((int)movieId);
 
             if (movie is null)
                 return RedirectToAction("Error", "Error", ErrorCode.NullMovie);
 
-            var comments = await movieService.GetCommentByMovieId(movie.Id);
+            var comments = await MService.GetCommentByMovieId(movie.Id);
 
             var model = new MovieDetailsViewModel()
             {
@@ -90,8 +90,8 @@ namespace MovieLibrary.Controllers
         #region MovieList
         public async Task<IActionResult> MovieList()
         {
-            var movies = await movieService.GetMovies();
-            var model = await movieService.SetMovieAndRole(movies);
+            var movies = await MService.GetMovies();
+            var model = await MService.SetMovieAndRole(movies);
 
             return View(model);
         }
@@ -103,9 +103,9 @@ namespace MovieLibrary.Controllers
         {
             var model = new CreateMovieViewModel();
 
-            var awards = await movieService.GetAwards();
-            var producers = await movieService.GetProducers();
-            var actors = await movieService.GetActors();
+            var awards = await MService.GetAwards();
+            var producers = await MService.GetProducers();
+            var actors = await MService.GetActors();
 
             model.AllMovieAwards = new SelectList(awards, "Id", "Name").ToList();
             model.AllProducers = new SelectList(producers, "Id", "Name").ToList();
@@ -117,7 +117,7 @@ namespace MovieLibrary.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateMovieViewModel model)
         {
-            var user = await movieService.GetUserById(GetUserId());
+            var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
                 return RedirectToAction("Error", "Error", ErrorCode.NullUser);
@@ -162,9 +162,9 @@ namespace MovieLibrary.Controllers
                 stream.Close();
             }
 
-            await movieService.CreateMovie(newMovie);
-            await movieService.AddMovieAwards(model.SelectedMovieAwardsIds, newMovie.Id);
-            await movieService.AddActors(model.SelectedMovieActorsIds, newMovie.Id);
+            await MService.CreateMovie(newMovie);
+            await MService.AddMovieAwards(model.SelectedMovieAwardsIds, newMovie.Id);
+            await MService.AddActors(model.SelectedMovieActorsIds, newMovie.Id);
 
             return RedirectToAction("Create");
         }
@@ -178,18 +178,18 @@ namespace MovieLibrary.Controllers
             if (movieId is null || movieId is 0)
                 return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
 
-            var movie = await movieService.GetMovieById((int)movieId);
-            var allmovieAwards = await movieService.GetAwards();
-            var allmovieProducers = await movieService.GetProducers();
-            var allmovieActors = await movieService.GetActors();
+            var movie = await MService.GetMovieById((int)movieId);
+            var allmovieAwards = await MService.GetAwards();
+            var allmovieProducers = await MService.GetProducers();
+            var allmovieActors = await MService.GetActors();
 
             if (movie is null)
                 return RedirectToAction("Error", "Error", ErrorCode.NullMovie);
 
             //Getting actors, producer and awards which are already in the movie
-            var movieActors = await movieService.GetActors(movie.Id);
-            var movieAwards = await movieService.GetAwards(movie.Id);
-            var movieProducer = await movieService.GetProducer(movie.ProducerId);
+            var movieActors = await MService.GetActors(movie.Id);
+            var movieAwards = await MService.GetAwards(movie.Id);
+            var movieProducer = await MService.GetProducer(movie.ProducerId);
 
             var model = new UpdateMovieViewModel()
             {
@@ -302,7 +302,7 @@ namespace MovieLibrary.Controllers
             if (movieId is null || movieId is 0)
                 return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
 
-            var movie = await movieService.GetMovieById((int)movieId);
+            var movie = await MService.GetMovieById((int)movieId);
 
             if (movie is null)
                 return RedirectToAction("Error", "Error", ErrorCode.NullMovie);
@@ -315,7 +315,7 @@ namespace MovieLibrary.Controllers
                     System.IO.File.Delete(deletePath);
             }
 
-            await movieService.DeleteMovie(movie);
+            await MService.DeleteMovie(movie);
 
             return RedirectToAction("Index");
         }
@@ -328,12 +328,12 @@ namespace MovieLibrary.Controllers
             if (commentId is null || commentId is 0)
                 return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
 
-            var comment = await movieService.GetComment((int)commentId);
+            var comment = await MService.GetComment((int)commentId);
 
             if (comment is null)
                 return RedirectToAction("Error", "Error", ErrorCode.NullComment);
 
-            await movieService.DeleteComment(comment);
+            await MService.DeleteComment(comment);
 
             return RedirectToAction("MovieDetails", new { movieId = comment.MovieId });
         }

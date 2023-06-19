@@ -81,7 +81,7 @@ namespace MovieLibrary.Services
 
         public async Task AddMovieAwards(int[]? awardsIds, int movieId)
         {
-            if (awardsIds is not null || awardsIds!.Length > 0)
+            if (awardsIds is not null || awardsIds?.Length > 0)
             {
                 foreach (var id in awardsIds)
                 {
