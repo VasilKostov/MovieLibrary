@@ -127,7 +127,6 @@ namespace MovieLibrary.Services
         /// <summary>
         /// Gets movies for MovieList ordered by certain way and are also accepted by Admin/Manager
         /// </summary>
-        /// <returns>G</returns>
         public async Task<List<Movie>?> GetMovies()
         {
             return await db.Movies
@@ -217,6 +216,72 @@ namespace MovieLibrary.Services
         public async Task<MovieAward> GetMovieAward(int awardId)
         {
             return await db.MovieAwards.Where(a => a.Id == awardId).FirstAsync();
+        }
+
+        public async Task<List<Movie_MovieAward>> GetMovie_MovieAwards(int movieId)
+        {
+            return await db.Movie_MovieAwards.Where(mma => mma.MovieId == movieId).ToListAsync();
+        }
+
+        public async Task<List<Actor_Movie>> GetMovieActors(int movieId)
+        {
+            return await db.Actors_Movies.Where(am => am.MovieId == movieId).ToListAsync();
+        }
+
+        public async Task RemoveMovieAwards(int movieId)
+        {
+            var movieAwards = await GetMovie_MovieAwards(movieId);
+
+            db.RemoveRange(movieAwards);
+        }
+
+        public async Task RemoveMovieActors(int movieId)
+        {
+            var movieActors = await GetMovieActors(movieId);
+
+            db.RemoveRange(movieActors);
+        }
+
+        public async Task<List<Movie>?> GetMovies(bool accepted)
+        {
+            return await db.Movies.Where(m => m.Accepted == accepted).ToListAsync();
+        }
+
+        /// <summary>
+        /// Updates the status of acceptance of a certain movie
+        /// </summary>
+        public async Task UpdateMovie(int movieId)
+        {
+            var movie = await GetMovieById(movieId);
+
+            if (movie is not null)
+                movie.Accepted = true;
+
+            await db.SaveChangesAsync();
+        }
+
+        public async Task<List<Favourite>?> GetFavorites(string userId)
+        {
+            return await db.Favourites.Where(m => m.AppUserId == userId).ToListAsync();
+        }
+
+        public async Task<List<Movie>?> GetUserFavorites(string userId)
+        {
+            var favMovies = await GetFavorites(userId);
+
+            if (favMovies is null || favMovies.Count < 0)
+                return new List<Movie>();
+
+            var movies = new List<Movie>();
+            var allMovies = await GetMovies(true);
+
+            if (allMovies is null)
+                return movies;
+
+            foreach (var movie in favMovies)
+                movies.Add(allMovies.First(m => m.Id == movie.MovieId));
+
+            return movies;
         }
     }
 }

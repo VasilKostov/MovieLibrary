@@ -1,6 +1,7 @@
 ﻿using MovieLibrary.Models;
 using MovieLibrary.Models.Actors;
 using MovieLibrary.Models.Movies;
+using MovieLibrary.Models.Relations;
 using MovieLibrary.ViewModels;
 
 namespace MovieLibrary.Contracts
@@ -22,6 +23,7 @@ namespace MovieLibrary.Contracts
         Task AddActors(int[] actorsIds, int movieId);
         Task DeleteMovie(Movie? movie);
         Task<List<Movie>?> GetMovies();
+        Task<List<Movie>?> GetMovies(bool accepted);
         Task<List<(string, Movie)>?> SetMovieAndRole(List<Movie>? movies);
         Task<string> GetCreatorsRole(string? userId);
         Task<MovieComment?> GetComment(int commentId);
@@ -29,5 +31,12 @@ namespace MovieLibrary.Contracts
         Task<Producer> GetProducer(int producerId);
         Task<List<MovieAward>?> GetAwards(int movieId);
         Task<MovieAward> GetMovieAward(int awardId);
+        Task RemoveMovieAwards(int movieId);
+        Task<List<Movie_MovieAward>> GetMovie_MovieAwards(int movieId);
+        Task RemoveMovieActors(int movieId);
+        Task<List<Actor_Movie>> GetMovieActors(int movieId);
+        Task UpdateMovie(int movieId);
+        Task<List<Favourite>?> GetFavorites(string userId);
+        Task<List<Movie>?> GetUserFavorites(string userId);
     }
 }

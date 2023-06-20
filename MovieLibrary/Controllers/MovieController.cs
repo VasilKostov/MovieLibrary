@@ -210,14 +210,15 @@ namespace MovieLibrary.Controllers
         public async Task<IActionResult> Update(UpdateMovieViewModel model)
         {
             var movie = model.Movie;
-            var movieToUpdate = _db.Movies.FirstOrDefault(m => m.Id == movie.Id);
+            var movieToUpdate = await MService.GetMovieById(movie.Id);
 
             if (movieToUpdate is null || movie is null)
-                return View("Error", "Nullable exception in Movies");
+                return RedirectToAction("Error", "Error", ErrorCode.NullMovie);
 
             if (movie.PosterFile is null)
                 movieToUpdate.PosterSource = movieToUpdate.PosterSource;
-            else if (movie.PosterFile.Length > 0 && movie.PosterFile != null)
+
+            else if (movie.PosterFile.Length > 0 && movie.PosterFile is not null)
             {
                 if (movieToUpdate.PosterSource is not null)
                 {
@@ -225,6 +226,7 @@ namespace MovieLibrary.Controllers
                     if (System.IO.File.Exists(deletePath))
                         System.IO.File.Delete(deletePath);
                 }
+
                 var path = Path.Combine(_webHostEnvironment.WebRootPath, "images/posters", movie.PosterFile.FileName);
 
                 using (var memoryStream = new MemoryStream())
@@ -236,7 +238,9 @@ namespace MovieLibrary.Controllers
                     else
                         ModelState.AddModelError(string.Empty, "The file is too large. It must be under 2 MB");
                 }
+
                 using FileStream stream = new FileStream(path, FileMode.Create);
+
                 await movie.PosterFile.CopyToAsync(stream);
                 stream.Close();
             }
@@ -248,50 +252,24 @@ namespace MovieLibrary.Controllers
             movieToUpdate.Description = movie.Description;
             movieToUpdate.Category = movie.Category;
 
-            //If the array of Ids is empty that means that the user wants to leave the movie with the same Actors/Awards/Producer
+            //If the array of Ids is empty that means that the user wants to leave the movie with the same Actors/Producer
             if (model.SelectedMovieProducerId is not null && model.SelectedMovieProducerId is not 0)
                 movieToUpdate.ProducerId = (int)model.SelectedMovieProducerId!;
 
-            _db.SaveChanges();
-
+            //A movie could have zero awards
             if (model.SelectedMovieAwardsIds is not null)
             {
-                var movieAwards = _db.Movie_MovieAwards.ToList();
-
-                _db.RemoveRange(movieAwards.Where(a => a.MovieId == movie.Id));
-
-                foreach (var awardId in model.SelectedMovieAwardsIds)
-                {
-                    var newMovieWithAwards = new Movie_MovieAward()
-                    {
-                        MovieId = movie.Id,
-                        MovieAwardId = awardId
-                    };
-
-                    _db.Movie_MovieAwards.Add(newMovieWithAwards);
-                    _db.SaveChanges();
-                }
+                await MService.RemoveMovieAwards(movieToUpdate.Id);
+                await MService.AddMovieAwards(model.SelectedMovieAwardsIds, movieToUpdate.Id);
             }
 
             if (model.SelectedMovieActorsIds is not null)
             {
-                var movieActors = _db.Actors_Movies.ToList();
-
-                _db.RemoveRange(movieActors.Where(a => a.MovieId == movie.Id));
-
-                foreach (var actorId in model.SelectedMovieActorsIds)
-                {
-                    var newMovieWithActor = new Actor_Movie()
-                    {
-                        MovieId = movie.Id,
-                        ActorId = actorId
-                    };
-
-                    _db.Actors_Movies.Add(newMovieWithActor);
-                    _db.SaveChanges();
-                }
+                await MService.RemoveMovieActors(movieToUpdate.Id);
+                await MService.AddActors(model.SelectedMovieAwardsIds!, movieToUpdate.Id);
             }
-            return RedirectToAction(nameof(Index));
+
+            return RedirectToAction("MovieList");
         }
         #endregion
 
@@ -317,7 +295,7 @@ namespace MovieLibrary.Controllers
 
             await MService.DeleteMovie(movie);
 
-            return RedirectToAction("Index");
+            return RedirectToAction("MovieList");
         }
         #endregion
 
@@ -341,69 +319,59 @@ namespace MovieLibrary.Controllers
 
         #region Accept
         [HttpGet]
-        public IActionResult Accept()
+        public async Task<IActionResult> Accept()
         {
-            AppUser? user = _db.Users.FirstOrDefault(u => u.UserName == User.Identity!.Name);
+            var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
-                return View("Error", "Nullable exception in AppUsers");
+                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
 
-            var movies = _db.Movies.Where(m => m.Accepted == false).ToList();
+            var movies = await MService.GetMovies(false);
 
             return View(movies);
         }
 
         [HttpPost]
-        public IActionResult Accept(int? movieId)
+        public async Task<IActionResult> Accept(int? movieId)
         {
             if (movieId is null || movieId is 0)
-                return View("Error", "Nullable exception in Movies");
+                return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
 
-            Movie? movie = _db.Movies.FirstOrDefault(m => m.Id == movieId);
+            var movie = await MService.GetMovieById((int)movieId);
 
             if (movie is null)
-                return View("Error", "Nullable exception");
+                return RedirectToAction("Error", "Error", ErrorCode.NullMovie);
 
             movie.Accepted = true;
 
-            _db.SaveChanges();
+            await MService.UpdateMovie(movie.Id);
 
-            return RedirectToAction(nameof(Accept));
+            return RedirectToAction("Accept");
         }
         #endregion
 
         #region Favourite
         [HttpGet]
-        public IActionResult Favourite()
+        public async Task<IActionResult> Favourite()
         {
-            var user = _db.AppUser.FirstOrDefault(u => u.UserName == User.Identity!.Name);
+            var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
-                return View("Error", "Nullable exception in AppUsers");
+                return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
 
-            var favUserMovies = _db.Favourites.Where(m => m.AppUserId == user.Id).ToList();
-            var movies = new List<Movie>();
-            var AllMovies = _db.Movies.ToList();
-
-            if (AllMovies is null || favUserMovies is null)
-                return View(movies);
-
-            foreach (var movie in favUserMovies)
-            {
-                movies.Add(AllMovies.First(m => m.Id == movie.MovieId));
-            }
+           var movies = await MService.GetUserFavorites(user.Id);
 
             return View(movies);
         }
 
         [HttpPost]
-        public IActionResult Favourite(int movieId)
+        public async Task<IActionResult> Favourite(int movieId)
         {
-            var user = _db.AppUser.FirstOrDefault(u => u.UserName == User.Identity!.Name);
+            var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
-                return View("Error", "Nullable exception in AppUsers");
-
+                return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
+            //TODO: Do tuk sym
             var favouriteMovieToAdd = new Favourite()
             {
                 MovieId = movieId,
