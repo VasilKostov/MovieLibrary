@@ -8,7 +8,7 @@ using MovieLibrary.ViewModels.ActorViewModels;
 
 namespace MovieLibrary.Controllers
 {
-    public class ActorController : Controller
+    public class ActorController : BaseController
     {
         private readonly ApplicationDbContext _db;
         public ActorController(ApplicationDbContext db)

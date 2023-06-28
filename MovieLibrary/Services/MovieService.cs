@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using MovieLibrary.Contracts;
 using MovieLibrary.Data;
 using MovieLibrary.Models;
@@ -282,6 +283,87 @@ namespace MovieLibrary.Services
                 movies.Add(allMovies.First(m => m.Id == movie.MovieId));
 
             return movies;
+        }
+
+        public async Task<bool> IsInFavourites(Favourite favourite)
+        {
+            return await db.Favourites.ContainsAsync(favourite);
+        }
+
+        public async Task AddFavourites(Favourite favourite)
+        {
+            if (!await IsInFavourites(favourite))
+            {
+                await db.Favourites.AddAsync(favourite);
+                await db.SaveChangesAsync();
+            }
+        }
+
+        public async Task<List<Movie>?> GetBucketMovies(string userId)
+        {
+            var bucketList = await GetBucketList(userId);
+            var AllMovies = await GetMovies();
+            var movies = new List<Movie>();
+
+            if (bucketList is null)
+                return movies;
+
+            foreach (var movie in bucketList)
+                movies.Add(AllMovies!.First(m => m.Id == movie.MovieId));
+
+            return movies;
+        }
+
+        public async Task<List<BucketList>?> GetBucketList(string userId)
+        {
+            return await db.BucketLists.Where(m => m.AppUserId == userId).ToListAsync();
+        }
+
+        public async Task<bool> IsInBucketList(BucketList bucket)
+        {
+            return await db.BucketLists.ContainsAsync(bucket);
+        }
+
+        public async Task AddBucket(BucketList bucket)
+        {
+            await db.BucketLists.AddAsync(bucket);
+            await db.SaveChangesAsync();
+        }
+
+        public async Task RemoveBucketListMovie(int movieId, string userId)
+        {
+            var movieToRemove = await GetBucketList(movieId, userId);
+
+            if (movieToRemove is null) return;
+
+            db.BucketLists.Remove(movieToRemove);
+            await db.SaveChangesAsync();
+        }
+
+        public async Task<BucketList?> GetBucketList(int movieId, string userId)
+        {
+            return await db.BucketLists.Where(b => b.MovieId == movieId && b.AppUserId == userId).FirstOrDefaultAsync();
+        }
+
+        public async Task AddComment(MovieComment comment)
+        {
+            await db.MovieComments.AddAsync(comment);
+            await db.SaveChangesAsync();
+        }
+
+        public async Task RemoveFavourite(int movieId, string userId)
+        {
+            var movieToRemove = await GetFavourite(movieId, userId);
+
+            if (movieToRemove is null) return;
+
+            db.Favourites.Remove(movieToRemove);
+            await db.SaveChangesAsync();
+        }
+
+        public async Task<Favourite?> GetFavourite(int movieId, string userId)
+        {
+            return await db.Favourites.Where(f => f.MovieId == movieId && f.AppUserId == userId).FirstOrDefaultAsync();
         }
     }
 }

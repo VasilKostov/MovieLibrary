@@ -357,9 +357,9 @@ namespace MovieLibrary.Controllers
             var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
+                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
 
-           var movies = await MService.GetUserFavorites(user.Id);
+            var movies = await MService.GetUserFavorites(user.Id);
 
             return View(movies);
         }
@@ -370,53 +370,60 @@ namespace MovieLibrary.Controllers
             var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
-            //TODO: Do tuk sym
+                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
+
             var favouriteMovieToAdd = new Favourite()
             {
                 MovieId = movieId,
                 AppUserId = user.Id
             };
 
-            if (_db.Favourites.Contains(favouriteMovieToAdd))
-                return RedirectToAction(nameof(AllMovies));
+            if (await MService.IsInFavourites(favouriteMovieToAdd))
+                return RedirectToAction("AllMovies");
 
-            _db.Favourites.Add(favouriteMovieToAdd);
-            _db.SaveChanges();
+            await MService.AddFavourites(favouriteMovieToAdd);
 
-            return RedirectToAction(nameof(AllMovies));
+            return RedirectToAction("AllMovies");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveFavourite(int? movieId)
+        {
+            if (movieId is null || movieId is 0)
+                return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
+
+            var user = await MService.GetUserById(GetUserId());
+
+            if (user is null)
+                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
+
+            await MService.RemoveFavourite((int)movieId, user.Id);
+
+            return RedirectToAction("Favourite");
         }
         #endregion
 
         #region Bucketlist
         [HttpGet]
-        public IActionResult BucketList()
+        public async Task<IActionResult> BucketList()
         {
-            var user = _db.AppUser.FirstOrDefault(u => u.UserName == User.Identity!.Name);
+            var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
-                return View("Error", "Nullable exception in AppUsers");
+                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
 
-            var bucketListUserMovies = _db.BucketLists.Where(m => m.AppUserId == user.Id).ToList();
-            var movies = new List<Movie>();
-            var AllMovies = _db.Movies.ToList();
-
-            if (AllMovies is null || bucketListUserMovies is null)
-                return View(movies);
-
-            foreach (var movie in bucketListUserMovies)
-                movies.Add(AllMovies.First(m => m.Id == movie.MovieId));
+            var movies = await MService.GetBucketMovies(GetUserId());
 
             return View(movies);
         }
 
         [HttpPost]
-        public IActionResult BucketList(int movieId)
+        public async Task<IActionResult> BucketList(int movieId)
         {
-            var user = _db.AppUser.FirstOrDefault(u => u.UserName == User.Identity!.Name);
+            var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
-                return View("Error", "Nullable exception in AppUsers");
+                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
 
             var bucketListToAdd = new BucketList()
             {
@@ -424,44 +431,37 @@ namespace MovieLibrary.Controllers
                 AppUserId = user.Id
             };
 
-            if (_db.BucketLists.Contains(bucketListToAdd))
-                return RedirectToAction(nameof(AllMovies));
+            if (await MService.IsInBucketList(bucketListToAdd))
+                return RedirectToAction("AllMovies");
 
-            _db.BucketLists.Add(bucketListToAdd);
-            _db.SaveChanges();
+            await MService.AddBucket(bucketListToAdd);
 
-            return RedirectToAction(nameof(AllMovies));
+            return RedirectToAction("AllMovies");
         }
 
         [HttpPost]
-        public IActionResult DeleteMovieFromBucketList(int? movieId)
+        public async Task<IActionResult> RemoveMovieFromBucketList(int? movieId)
         {
-            var user = _db.AppUser.FirstOrDefault(u => u.UserName == User.Identity!.Name);
+            if (movieId is null || movieId is 0)
+                return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
+
+            var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
-                return View("Error", "Nullable exception in AppUsers");
+                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
 
-            if (movieId is not null && movieId != 0)
-            {
-                var movie = _db.BucketLists.Where(b => b.MovieId == movieId && b.AppUserId == user.Id).FirstOrDefault();
+            await MService.RemoveBucketListMovie((int)movieId, user.Id);
 
-                if (movie is not null)
-                {
-                    _db.BucketLists.Remove(movie);
-                    _db.SaveChanges();
-                }
-            }
-
-            return RedirectToAction(nameof(BucketList));
+            return RedirectToAction("BucketList");
         }
         #endregion
 
         #region PDFDowloader
         [HttpGet]
-        public IActionResult ConvertBucketListToPDf()
+        public async Task<IActionResult> ConvertBucketListToPDf()
         {
-            string html = GetBucketListHtml();
-            string css = GetBucketListCss();
+            var html = await GetBucketListHtml();
+            var css = GetBucketListCss();
 
             string combinedContent = $"<html><head><style>{css}</style></head><body>{html}</body></html>";
 
@@ -474,12 +474,15 @@ namespace MovieLibrary.Controllers
 
         #region AddComment
         [HttpPost]
-        public IActionResult Comment(MovieDetailsViewModel model)
+        public async Task<IActionResult> Comment(MovieDetailsViewModel? model)
         {
-            var user = _db.AppUser.FirstOrDefault(u => u.UserName == User.Identity!.Name);
+            if (model is null)
+                return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
+
+            var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
-                return View("Error", "Nullable exception in AppUsers");
+                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
 
             if (string.IsNullOrEmpty(model.Comment))
                 return RedirectToAction("MovieDetails", new { movieId = model.Id });
@@ -492,8 +495,7 @@ namespace MovieLibrary.Controllers
                 PostedTime = DateTime.Now
             };
 
-            _db.MovieComments.Add(comment);
-            _db.SaveChanges();
+            await MService.AddComment(comment);
 
             return RedirectToAction("MovieDetails", new { movieId = comment.MovieId });
         }
@@ -510,24 +512,17 @@ namespace MovieLibrary.Controllers
         {
             List<string> separatedPath = path.Split('\\').ToList();
             if (separatedPath.Last().Contains("emptyProfilePicture"))
-            {
                 return path = "~/" + separatedPath.Last();
-            }
             else
-            {
                 return path = "~/" + separatedPath[separatedPath.Count - 2] + "/" + separatedPath[separatedPath.Count - 1];
-            }
         }
 
-        private string GetBucketListHtml()
+        private async Task<string> GetBucketListHtml()
         {
-            var user = _db.AppUser.FirstOrDefault(u => u.UserName == User.Identity!.Name);
-            var bucketListUserMovies = _db.BucketLists.Where(m => m.AppUserId == user!.Id).ToList();
-            var movies = new List<Movie>();
-            var AllMovies = _db.Movies.ToList();
-
-            foreach (var movie in bucketListUserMovies)
-                movies.Add(AllMovies.First(m => m.Id == movie.MovieId));
+            //Will always have user because of authorization policies
+            var user = await MService.GetUserById(GetUserId());
+            //There will always be movies because the button that triggers this function is only visible when the count is > 0
+            var movies = await MService.GetBucketMovies(user!.Id);
 
             var sb = new StringBuilder();
 
@@ -538,7 +533,7 @@ namespace MovieLibrary.Controllers
             sb.Append("</div>");
             sb.Append("<div class=\"p-4 border rounded\">");
 
-            if (movies.Count() > 0 && movies is not null)
+            if (movies!.Count() > 0 && movies is not null)
             {
                 sb.Append("<table class=\"table table-striped border\">");
                 sb.Append("<tr class=\"table-secondary\">");

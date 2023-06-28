@@ -38,5 +38,16 @@ namespace MovieLibrary.Contracts
         Task UpdateMovie(int movieId);
         Task<List<Favourite>?> GetFavorites(string userId);
         Task<List<Movie>?> GetUserFavorites(string userId);
+        Task<bool> IsInFavourites(Favourite favourite);
+        Task AddFavourites(Favourite favourite);
+        Task<List<Movie>?> GetBucketMovies(string userId);
+        Task<List<BucketList>?> GetBucketList(string userId);
+        Task<bool> IsInBucketList(BucketList bucket);
+        Task AddBucket(BucketList bucket);
+        Task RemoveBucketListMovie(int movieId, string userId);
+        Task<BucketList?> GetBucketList(int movieId, string userId);
+        Task AddComment(MovieComment comment);
+        Task RemoveFavourite(int movieId, string userId);
+        Task<Favourite?> GetFavourite(int movieId, string userId);
     }
 }

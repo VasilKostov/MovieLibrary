@@ -9,6 +9,7 @@ using MovieLibrary.Models.Movies;
 
 namespace MovieLibrary.Controllers
 {
+    //Change the functions which are needed to be authorized to use it to make them [Auth..]
     public class AccountController : Controller
     {
         private readonly UserManager<AppUser> _userManager;

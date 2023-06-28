@@ -14,7 +14,7 @@
             @movie.ReleaseDate
             @movie.MinimumAge
         </div>
-        <form asp-action="DeleteMovieFromBucketList" asp-route-movieId="@movie.Id">
+        <form asp-action="RemoveMovieFromBucketList" asp-route-movieId="@movie.Id">
             <button type="submit" onclick="return confirm('Are you sure you want to remove this movie from you bucketlist?')" class="btn btn-danger">
                 Remove
             </button>
@@ -23,5 +23,5 @@
 }
 else
 {
-    <h3>Nothing added to your Bucketlist of movies you would want to watch in the future!</h3>
+    <h3>Nothing is added to your Bucketlist of movies you would want to watch in the future!</h3>
 }
