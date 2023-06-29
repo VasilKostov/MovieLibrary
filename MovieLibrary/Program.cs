@@ -16,6 +16,7 @@ builder.Services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<A
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IMovieService, MovieService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
 
 builder.Services.AddAuthentication()
 .AddFacebook(options =>

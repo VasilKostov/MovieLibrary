@@ -29,13 +29,11 @@ namespace MovieLibrary.Controllers
     public class MovieController : BaseController
     {
         private readonly IMovieService MService;
-        private readonly ApplicationDbContext _db;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public MovieController(ApplicationDbContext db, IWebHostEnvironment webHostEnvironment, IMovieService movieService)
+        public MovieController(IWebHostEnvironment webHostEnvironment, IMovieService movieService)
         {
-            _db = db;
             _webHostEnvironment = webHostEnvironment;
-            this.MService = movieService;
+            MService = movieService;
         }
 
         #region Movies
@@ -88,6 +86,7 @@ namespace MovieLibrary.Controllers
         #endregion
 
         #region MovieList
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> MovieList()
         {
             var movies = await MService.GetMovies();
@@ -456,22 +455,6 @@ namespace MovieLibrary.Controllers
         }
         #endregion
 
-        #region PDFDowloader
-        [HttpGet]
-        public async Task<IActionResult> ConvertBucketListToPDf()
-        {
-            var html = await GetBucketListHtml();
-            var css = GetBucketListCss();
-
-            string combinedContent = $"<html><head><style>{css}</style></head><body>{html}</body></html>";
-
-            var renderer = new HtmlToPdf();
-            var pdf = renderer.RenderHtmlAsPdf(combinedContent);
-
-            return File(pdf.BinaryDataIncremental, "application/pdf", "Bucketlist.pdf");
-        }
-        #endregion
-
         #region AddComment
         [HttpPost]
         public async Task<IActionResult> Comment(MovieDetailsViewModel? model)
@@ -498,6 +481,22 @@ namespace MovieLibrary.Controllers
             await MService.AddComment(comment);
 
             return RedirectToAction("MovieDetails", new { movieId = comment.MovieId });
+        }
+        #endregion
+
+        #region PDFDowloader
+        [HttpGet]
+        public async Task<IActionResult> ConvertBucketListToPDf()
+        {
+            var html = await GetBucketListHtml();
+            var css = GetBucketListCss();
+
+            string combinedContent = $"<html><head><style>{css}</style></head><body>{html}</body></html>";
+
+            var renderer = new HtmlToPdf();
+            var pdf = renderer.RenderHtmlAsPdf(combinedContent);
+
+            return File(pdf.BinaryDataIncremental, "application/pdf", "Bucketlist.pdf");
         }
         #endregion
 

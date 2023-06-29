@@ -365,5 +365,35 @@ namespace MovieLibrary.Services
         {
             return await db.Favourites.Where(f => f.MovieId == movieId && f.AppUserId == userId).FirstOrDefaultAsync();
         }
+
+        public async Task<List<ActorAward>> GetActorAwards()
+        {
+            return await db.ActorAwards.ToListAsync();
+        }
+
+        public async Task CreateActor(Actor? actor)
+        {
+            if (actor == null) return;
+
+            await db.Actors.AddAsync(actor);
+            await db.SaveChangesAsync();
+        }
+
+        public async Task AddActorAwards(int[]? selectedActorAwardsIds, Actor? actor)
+        {
+            if (selectedActorAwardsIds is null || actor is null) return;
+
+            foreach (var awardId in selectedActorAwardsIds)
+            {
+                var newActorWithAwards = new Actor_ActorAward()
+                {
+                    ActorId = actor.Id,
+                    ActorAwardId = awardId
+                };
+
+                await db.Actor_ActorAwards.AddAsync(newActorWithAwards);
+                await db.SaveChangesAsync();
+            }
+        }
     }
 }

@@ -20,7 +20,7 @@ namespace MovieLibrary.Controllers
             _userManager = userManager;
         }
 
-        public IActionResult Index()
+        public IActionResult UsersList()
         {
             var userList = _db.AppUser.ToList();
             var userRole = _db.UserRoles.ToList();
@@ -86,7 +86,7 @@ namespace MovieLibrary.Controllers
 
                 _db.SaveChanges();
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("UsersList");
             }
 
             user.RoleList = _db.Roles.Select(u => new SelectListItem
@@ -109,7 +109,7 @@ namespace MovieLibrary.Controllers
             _db.AppUser.Remove(user);
             _db.SaveChanges();
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("UsersList");
         }
     }
 }

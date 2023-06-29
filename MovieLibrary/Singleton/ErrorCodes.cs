@@ -8,6 +8,7 @@
         NullMovie = 3,
         NullActor = 4,
         NullComment = 5,
+        NullExternalLoginInfo = 6,
     }
 
     public static class ErrorCodes
@@ -20,6 +21,7 @@
             [(int)ErrorCode.NullMovie] = "Null exception in Movies",
             [(int)ErrorCode.NullActor] = "Null exception in Actors",
             [(int)ErrorCode.NullComment] = "Null exception in Comment",
+            [(int)ErrorCode.NullExternalLoginInfo] = "Null exception after getting the info from GetExternalLoginInfo()",
         };
     }
 }

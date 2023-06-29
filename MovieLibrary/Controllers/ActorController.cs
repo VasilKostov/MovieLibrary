@@ -1,33 +1,31 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using MovieLibrary.Contracts;
 using MovieLibrary.Data;
 using MovieLibrary.Models;
 using MovieLibrary.Models.Actors;
 using MovieLibrary.Models.Relations;
+using MovieLibrary.Services;
+using MovieLibrary.Singleton;
 using MovieLibrary.ViewModels.ActorViewModels;
 
 namespace MovieLibrary.Controllers
 {
     public class ActorController : BaseController
     {
-        private readonly ApplicationDbContext _db;
-        public ActorController(ApplicationDbContext db)
+        private readonly IMovieService MService;
+        public ActorController(IMovieService movieService)
         {
-            _db = db;
-        }
-
-        public IActionResult Index()
-        {
-            return View();
+            MService = movieService;
         }
 
         #region CreateActor
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             var model = new CreateActorViewModel();
 
-            var actorAwards = _db.ActorAwards.ToList();
+            var actorAwards = await MService.GetActorAwards();
 
             model.AllActorAwards = new SelectList(actorAwards, "Id", "Name");
 
@@ -35,12 +33,15 @@ namespace MovieLibrary.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(CreateActorViewModel model)
+        public async Task<IActionResult> Create(CreateActorViewModel? model)
         {
-            var user = _db.Users.FirstOrDefault(u => u.UserName == User.Identity!.Name);
+            var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
-                return View("Error", "Nullable exception in AppUsers");
+                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
+
+            if (model is null)
+                return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
 
             var newActor = new Actor()
             {
@@ -50,22 +51,10 @@ namespace MovieLibrary.Controllers
                 AppUserId = user.Id,
             };
 
-            _db.Actors.Add(newActor);
-            _db.SaveChanges();
+            await MService.CreateActor(newActor);
+            await MService.AddActorAwards(model.SelectedActorAwardsIds, newActor);
 
-            foreach (var awardId in model.SelectedActorAwardsIds)
-            {
-                var newActorWithAwards = new Actor_ActorAward()
-                {
-                    ActorId = newActor.Id,
-                    ActorAwardId = awardId
-                };
-
-                _db.Actor_ActorAwards.Add(newActorWithAwards);
-                _db.SaveChanges();
-            }
-
-            return RedirectToAction(nameof(Create));
+            return RedirectToAction("Create");
         }
         #endregion
     }
