@@ -8,6 +8,7 @@ using MovieLibrary.Data;
 using MovieLibrary.Models.Movies;
 using MovieLibrary.Contracts;
 using MovieLibrary.Singleton;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace MovieLibrary.Controllers
 {
@@ -57,9 +58,77 @@ namespace MovieLibrary.Controllers
         #endregion
 
         #region UsersList
+
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UsersList()
         {
             return View(await AService.GetUsersList());
+        }
+        #endregion
+
+        #region EditUser
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Edit(string userId)
+        {
+            var user = await MService.GetUserById(userId);
+
+            if (user is null)
+                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
+
+            user = await AService.SetUserRole(user);
+
+            return View(user);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(AppUser user)
+        {
+            if (ModelState.IsValid)
+            {
+                var userDbValue = await MService.GetUserById(user.Id);
+
+                if (userDbValue is null)
+                    return RedirectToAction("Error", "Error", ErrorCode.NullUser);
+
+                var userRole = await AService.GetUserRole(userDbValue.Id);
+
+                if (userRole is not null)
+                {
+                    var previousRoleName = await AService.GetCurrentUserRole(userRole);
+                    await userManager.RemoveFromRoleAsync(userDbValue, previousRoleName);
+                }
+
+                var roleName = await AService.GetCurrentUserRole(user);
+
+                await userManager.AddToRoleAsync(userDbValue,roleName);
+
+                await _db.SaveChangesAsync();
+
+                return RedirectToAction("UsersList");
+            }
+
+            user = await AService.SetUserRole(user);
+
+            return View(user);
+        }
+        #endregion
+
+        #region DeleteUser
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(string userId)
+        {
+            var user = await MService.GetUserById(userId);
+
+            if (user is null)
+                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
+
+            await AService.DeleteUser(user);
+
+            return RedirectToAction("UsersList");
         }
         #endregion
 
