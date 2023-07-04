@@ -73,5 +73,6 @@ namespace MovieLibrary.Contracts
         Task<List<ActorAward>> GetActorAwards();
         Task CreateActor(Actor actor);
         Task AddActorAwards(int[]? selectedActorAwardsIds, Actor? actor);
+        Task RateMovie(int? movieId, int? rate);
     }
 }

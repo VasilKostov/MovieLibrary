@@ -395,5 +395,20 @@ namespace MovieLibrary.Services
                 await db.SaveChangesAsync();
             }
         }
+
+        public async Task RateMovie(int? movieId, int? rate)
+        {
+            if ((movieId is null or 0) || (rate is null or 0)) return;
+
+            var movie = await GetMovieById((int)movieId);
+
+            if (movie == null) return;
+
+            movie.Rating = (movie.Rating + (int)rate) / (movie.UsersRated + 1);
+            movie.UsersRated += 1;
+
+            db.Update(movie);
+            await db.SaveChangesAsync();
+        }
     }
 }

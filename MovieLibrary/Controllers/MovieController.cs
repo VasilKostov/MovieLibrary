@@ -1,8 +1,11 @@
-﻿using IronPdf;
+﻿using Grpc.Core;
+using IronPdf;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.DotNet.Scaffolding.Shared.Project;
 using Microsoft.EntityFrameworkCore;
@@ -481,6 +484,24 @@ namespace MovieLibrary.Controllers
             await MService.AddComment(comment);
 
             return RedirectToAction("MovieDetails", new { movieId = comment.MovieId });
+        }
+        #endregion
+
+        #region RateMovie
+        [HttpPost]
+        public async Task<IActionResult> Rate(int? movieId, int? rate)
+        {
+            if ((movieId is null or 0) || (rate is null or 0))
+                return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
+
+            var user = await MService.GetUserById(GetUserId());
+
+            if (user is null)
+                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
+
+            await MService.RateMovie(movieId, rate);
+
+            return RedirectToAction("MovieDetails", new { movieId = movieId });
         }
         #endregion
 
