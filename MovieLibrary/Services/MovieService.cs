@@ -410,5 +410,10 @@ namespace MovieLibrary.Services
             db.Update(movie);
             await db.SaveChangesAsync();
         }
+
+        public Task<List<Movie>?> SearchMovies(string? thing)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
