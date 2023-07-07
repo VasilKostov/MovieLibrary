@@ -1,6 +1,17 @@
-﻿@model List<MovieLibrary.Models.Movies.Movie>
+﻿@using MovieLibrary.Models.Movies;
+@model List<Movie>
 <h1>All movies</h1>
 <hr />
+<form asp-action="Search">
+    <input type="text" placeholder="Search by name" />
+    <button type="submit" class="btn-dark">
+        Search
+    </button>
+</form>
+<div>
+    @Html.Partial("_SearchMoviePartialView", new List<Movie>())
+</div>
+
 <div>
     <div class="product-content product-fourcolumn clearfix">
         @if (Model is null || Model.Count < 1)
@@ -51,3 +62,26 @@
         }
     </div>
 </div>
+<script>
+    $(document).ready(function() {
+    $('#searchInput').on('input', function() {
+        var searchQuery = $(this).val();
+
+        if (searchQuery.length > 0) {
+            $.ajax({
+                url: '/Movie/Search',
+                method: 'GET',
+                data: { query: searchQuery },
+                success: function(response) {
+                    $('#searchResults').html(response);
+                },
+                error: function(xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        } else {
+            $('#searchResults').empty();
+        }
+    });
+});
+</script>

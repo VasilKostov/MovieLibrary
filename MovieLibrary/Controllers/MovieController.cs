@@ -505,6 +505,23 @@ namespace MovieLibrary.Controllers
         }
         #endregion
 
+        #region SearchMovie
+        public async Task<IActionResult> Search(string? data)
+        {
+            if (string.IsNullOrEmpty(data))
+                return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
+
+            var user = await MService.GetUserById(GetUserId());
+
+            if (user is null)
+                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
+
+            var movies = await MService.GetSearchedMovies(data);
+
+            return PartialView("_SearchMoviePartialView", movies);
+        }
+        #endregion
+
         #region PDFDowloader
         [HttpGet]
         public async Task<IActionResult> ConvertBucketListToPDf()

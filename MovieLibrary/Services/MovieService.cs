@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using LinqToDB.Data;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using MovieLibrary.Contracts;
 using MovieLibrary.Data;
@@ -7,6 +9,7 @@ using MovieLibrary.Models.Actors;
 using MovieLibrary.Models.Movies;
 using MovieLibrary.Models.Relations;
 using MovieLibrary.ViewModels;
+using NuGet.Protocol.Plugins;
 
 namespace MovieLibrary.Services
 {
@@ -411,9 +414,19 @@ namespace MovieLibrary.Services
             await db.SaveChangesAsync();
         }
 
-        public Task<List<Movie>?> SearchMovies(string? thing)
+        public async Task<List<Movie>?> GetSearchedMovies(string? data)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(data))
+                return null;
+
+            var movies = await (from m in db.Movies
+                                where m.Title.Contains(data) || m.Producer.Name.Contains(data)
+                                orderby m.ReleaseDate
+                                select m)
+                                .Take(5)
+                                .ToListAsync();
+
+            return movies;
         }
     }
 }

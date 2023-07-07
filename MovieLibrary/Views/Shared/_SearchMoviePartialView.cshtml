@@ -1,0 +1,16 @@
+﻿@using MovieLibrary.Models.Movies;
+@model List<Movie>?
+
+@if (Model is not null)
+{
+    @foreach (var movie in Model)
+    {
+        <div>
+            <a href="@Url.Action("MovieDetails", "Movie", new { id = movie.Id })">
+                <img src="@movie.PosterSource" alt="Movie Poster" />
+                <div>@movie.Title</div>
+                <div>@movie.GetYear(movie.ReleaseDate)</div>
+            </a>
+        </div>
+    }
+}
