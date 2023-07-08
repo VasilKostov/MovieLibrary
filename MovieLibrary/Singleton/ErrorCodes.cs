@@ -9,6 +9,7 @@
         NullActor = 4,
         NullComment = 5,
         NullExternalLoginInfo = 6,
+        NoSuchParameter = 7,
     }
 
     public static class ErrorCodes

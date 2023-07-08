@@ -2,15 +2,13 @@
 @model List<Movie>
 <h1>All movies</h1>
 <hr />
-<form asp-action="Search">
-    <input type="text" placeholder="Search by name" />
+
+<form asp-action="Search" asp-route-viewCaller="AllMovies">
+    <input type="text" name="data" placeholder="Search by Title/Producer" />
     <button type="submit" class="btn-dark">
         Search
     </button>
 </form>
-<div>
-    @Html.Partial("_SearchMoviePartialView", new List<Movie>())
-</div>
 
 <div>
     <div class="product-content product-fourcolumn clearfix">
@@ -62,26 +60,3 @@
         }
     </div>
 </div>
-<script>
-    $(document).ready(function() {
-    $('#searchInput').on('input', function() {
-        var searchQuery = $(this).val();
-
-        if (searchQuery.length > 0) {
-            $.ajax({
-                url: '/Movie/Search',
-                method: 'GET',
-                data: { query: searchQuery },
-                success: function(response) {
-                    $('#searchResults').html(response);
-                },
-                error: function(xhr, status, error) {
-                    console.log(error);
-                }
-            });
-        } else {
-            $('#searchResults').empty();
-        }
-    });
-});
-</script>

@@ -1,4 +1,11 @@
 ﻿@model IEnumerable<MovieLibrary.Models.Movies.Movie>
+
+<form asp-action="Search" asp-route-viewCaller="Favourite">
+    <input type="text" name="data" placeholder="Search by Title/Producer" />
+    <button type="submit" class="btn-dark">
+        Search
+    </button>
+</form>
 @if (Model is not null && Model.Count() is not 0)
 {
     @foreach (var movie in Model)

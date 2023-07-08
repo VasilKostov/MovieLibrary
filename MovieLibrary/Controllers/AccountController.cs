@@ -103,7 +103,7 @@ namespace MovieLibrary.Controllers
 
                 var roleName = await AService.GetCurrentUserRole(user);
 
-                await userManager.AddToRoleAsync(userDbValue,roleName);
+                await userManager.AddToRoleAsync(userDbValue, roleName);
 
                 await _db.SaveChangesAsync();
 
@@ -291,7 +291,7 @@ namespace MovieLibrary.Controllers
                 var info = await signInManager.GetExternalLoginInfoAsync();
 
                 if (info is null)
-                    return RedirectToAction("Error","Error",ErrorCode.NullExternalLoginInfo);
+                    return RedirectToAction("Error", "Error", ErrorCode.NullExternalLoginInfo);
 
                 var user = new AppUser
                 {
@@ -406,6 +406,19 @@ namespace MovieLibrary.Controllers
         }
         #endregion
 
+        #region Search
+        public async Task<IActionResult> Search(string? data)
+        {
+            var user = await MService.GetUserById(GetUserId());
+
+            if (user is null)
+                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
+
+            var users = await AService.GetSearchedUsers(data);
+            return View("UsersList", users);
+        }
+        #endregion
+
         #region ChangeFuncs
 
         [HttpPost]
@@ -432,7 +445,7 @@ namespace MovieLibrary.Controllers
                 using (var memoryStream = new MemoryStream())
                 {
                     await model.NewProfilePicture.CopyToAsync(memoryStream);
-                    
+
                     if (memoryStream.Length < 5 * 1024 * 1024)// Upload the file if less than 5 MB  
                         user.PictureSource = ChangePicturePath(path);
                     else

@@ -1,5 +1,10 @@
 ﻿@model List<MovieLibrary.Models.Movies.Movie>
-
+<form asp-action="Search" asp-route-viewCaller="Bucket">
+    <input type="text" name="data" placeholder="Search by Title/Producer" />
+    <button type="submit" class="btn-dark">
+        Search
+    </button>
+</form>
 @if (Model.Count > 0 && Model is not null)
 {
     <div class="text-center">

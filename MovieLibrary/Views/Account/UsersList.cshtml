@@ -5,6 +5,13 @@
         <h2 class="text-primary">User List </h2>
     </div>
 </div>
+
+<form asp-action="Search">
+    <input type="text" name="data" placeholder="Search by Email/Name" />
+    <button type="submit" class="btn-dark">
+        Search
+    </button>
+</form>
 <div class="p-4 border rounded">
     @if (Model.Count() > 0)
     {

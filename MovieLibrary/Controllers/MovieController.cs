@@ -506,19 +506,41 @@ namespace MovieLibrary.Controllers
         #endregion
 
         #region SearchMovie
-        public async Task<IActionResult> Search(string? data)
+        public async Task<IActionResult> Search(string? data, string viewCaller)
         {
-            if (string.IsNullOrEmpty(data))
-                return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
-
             var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
                 return RedirectToAction("Error", "Error", ErrorCode.NullUser);
 
-            var movies = await MService.GetSearchedMovies(data);
+            if (viewCaller is "AllMovies")
+            {
+                var movies = await MService.GetSearchedMovies(data, user);
+                return View("AllMovies", movies);
+            }
+            else if (viewCaller is "MovieList")
+            {
+                var movies = await MService.GetSearchedMovies(data);
+                var model = await MService.SetMovieAndRole(movies);
+                return View("MovieList", model);
+            }
+            else if (viewCaller is "MovieWaitlist")
+            {
+                var movies = await MService.GetSearchedAcceptedMovies(data);
+                return View("Accept", movies);
+            }
+            else if (viewCaller is "Bucket")
+            {
+                var movies = await MService.GetSearchedBucketMovies(data, user);
+                return View("BucketList", movies);
+            }
+            else if (viewCaller is "Favourite")
+            {
+                var movies = await MService.GetSearchedFavMovies(data, user);
+                return View("Favourite", movies);
+            }
 
-            return PartialView("_SearchMoviePartialView", movies);
+            return RedirectToAction("Error", "Error", ErrorCode.NoSuchParameter, "ERROR: NO SUCH VIEW FOR THE SEARCH FUNC");
         }
         #endregion
 

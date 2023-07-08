@@ -67,6 +67,21 @@ namespace MovieLibrary.Services
             return (await GetComments(userId), await GetMovies(userId));
         }
 
+        public async Task<List<AppUser>> GetSearchedUsers(string? data)
+        {
+            if (string.IsNullOrEmpty(data))
+                return await GetUsersList();
+
+            var users = await( from  user in db.Users
+                               where user.Email.Contains(data) || user.UserName.Contains(data)
+                               select user)
+                               .ToListAsync();
+
+            users = await SetUserRoles(users);
+
+            return users.OrderByDescending(u => u.Role).ThenBy(u => u.Email).ToList();
+        }
+
         public async Task<IdentityUserRole<string>?> GetUserRole(string userId)
         {
             return await db.UserRoles.FirstOrDefaultAsync(u => u.UserId == userId);
@@ -80,6 +95,7 @@ namespace MovieLibrary.Services
         public async Task<List<AppUser>> GetUsersList()
         {
             var users = await GetUsers();
+
             return await SetUserRoles(users);
         }
 

@@ -74,6 +74,26 @@ namespace MovieLibrary.Contracts
         Task CreateActor(Actor actor);
         Task AddActorAwards(int[]? selectedActorAwardsIds, Actor? actor);
         Task RateMovie(int? movieId, int? rate);
-        Task<List<Movie>?> GetSearchedMovies(string data);
+
+        /// <summary>
+        /// For AllMovies
+        /// </summary>
+        Task<List<Movie>?> GetSearchedMovies(string? data, AppUser user);
+
+        /// <summary>
+        /// For MovieList
+        /// </summary>
+        Task<List<Movie>?> GetSearchedMovies(string? data);
+
+        /// <summary>
+        /// For MovieWaitlist
+        /// </summary>
+        Task<List<Movie>?> GetSearchedAcceptedMovies(string? data);
+
+        /// <summary>
+        /// For BucketList
+        /// </summary>
+        Task<List<Movie>?> GetSearchedBucketMovies(string? data, AppUser user);
+        Task<List<Movie>?> GetSearchedFavMovies(string? data, AppUser user);
     }
 }

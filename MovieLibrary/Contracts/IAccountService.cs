@@ -26,6 +26,7 @@ namespace MovieLibrary.Contracts
         /// </summary>
         /// <returns>Tuple of Lists that contain comments and created movies</returns>
         Task<(List<MovieComment>? comments, List<Movie>? createdMovies)> GetProfileInfo(string userId);
+        Task<List<AppUser>> GetSearchedUsers(string? data);
         Task<IdentityUserRole<string>?> GetUserRole(string userId);
         Task<List<AppUser>> GetUsers();
 

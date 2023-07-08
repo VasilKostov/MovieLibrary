@@ -414,16 +414,82 @@ namespace MovieLibrary.Services
             await db.SaveChangesAsync();
         }
 
-        public async Task<List<Movie>?> GetSearchedMovies(string? data)
+        /// <summary>
+        /// For AllMovies
+        /// </summary>
+        public async Task<List<Movie>?> GetSearchedMovies(string? data, AppUser user)
         {
-            if (string.IsNullOrWhiteSpace(data))
-                return null;
+            if (string.IsNullOrEmpty(data))
+                return await GetAllMovies(user);
 
             var movies = await (from m in db.Movies
-                                where m.Title.Contains(data) || m.Producer.Name.Contains(data)
+                                where m.MinimumAge <= user.Age && (m.Title.Contains(data) || m.Producer.Name.Contains(data)) && m.Accepted
                                 orderby m.ReleaseDate
                                 select m)
-                                .Take(5)
+                                .ToListAsync();
+
+            return movies;
+        }
+
+        /// <summary>
+        /// For MovieList
+        /// </summary>
+        public async Task<List<Movie>?> GetSearchedMovies(string? data)
+        {
+            if (string.IsNullOrEmpty(data))
+                return await GetMovies();
+
+            var movies = await (from m in db.Movies
+                                where m.Accepted && (m.Title.Contains(data) || m.Producer.Name.Contains(data))
+                                orderby m.ReleaseDate
+                                select m)
+                                .ToListAsync();
+
+            return movies;
+        }
+
+        /// <summary>
+        /// For MovieWaitlist
+        /// </summary>
+        public async Task<List<Movie>?> GetSearchedAcceptedMovies(string? data)
+        {
+            if (string.IsNullOrEmpty(data))
+                return await GetMovies(false);
+
+            var movies = await(from m in db.Movies
+                               where !m.Accepted && (m.Title.Contains(data) || m.Producer.Name.Contains(data))
+                               orderby m.ReleaseDate
+                               select m)
+                                .ToListAsync();
+
+            return movies;
+        }
+
+        public async Task<List<Movie>?> GetSearchedBucketMovies(string? data, AppUser user)
+        {
+            if (string.IsNullOrEmpty(data))
+                return await GetBucketMovies(user.Id);
+
+            var movies = await(from m in db.Movies
+                               join bucket in db.BucketLists on m.Id equals bucket.MovieId
+                               where m.Accepted && bucket.AppUserId == user.Id &&(m.Title.Contains(data) || m.Producer.Name.Contains(data))
+                               orderby m.ReleaseDate
+                               select m)
+                                .ToListAsync();
+
+            return movies;
+        }
+
+        public async Task<List<Movie>?> GetSearchedFavMovies(string? data, AppUser user)
+        {
+            if (string.IsNullOrEmpty(data))
+                return await GetUserFavorites(user.Id);
+
+            var movies = await(from m in db.Movies
+                               join fav in db.Favourites on m.Id equals fav.MovieId
+                               where m.Accepted && fav.AppUserId == user.Id && (m.Title.Contains(data) || m.Producer.Name.Contains(data))
+                               orderby m.ReleaseDate
+                               select m)
                                 .ToListAsync();
 
             return movies;

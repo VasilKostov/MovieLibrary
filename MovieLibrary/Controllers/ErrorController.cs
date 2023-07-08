@@ -21,5 +21,19 @@ namespace MovieLibrary.Controllers
 
             return View(errorViewModel);
         }
+
+        public IActionResult Error(int errorCode, string errorMessage)
+        {
+            ErrorCodes.Messages.TryGetValue(errorCode, out var _);
+
+            var errorViewModel = new ErrorViewModel
+            {
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
+                ErrorCode = errorCode,
+                ErrorMessage = errorMessage ?? "ERROR: UNPARSABLE ERROR"
+            };
+
+            return View(errorViewModel);
+        }
     }
 }
