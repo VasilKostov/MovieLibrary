@@ -46,7 +46,7 @@ namespace MovieLibrary.Controllers
             var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullUser });
 
             var movies = await MService.GetAllMovies(user);
 
@@ -59,12 +59,12 @@ namespace MovieLibrary.Controllers
         public async Task<IActionResult> MovieDetails(int? movieId)
         {
             if (movieId is null || movieId is 0)
-                return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullParameter });
 
             var movie = await MService.GetMovieById((int)movieId);
 
             if (movie is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullMovie);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullMovie });
 
             var comments = await MService.GetCommentByMovieId(movie.Id);
 
@@ -122,7 +122,7 @@ namespace MovieLibrary.Controllers
             var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullUser });
 
             var newMovie = new Movie()
             {
@@ -178,7 +178,7 @@ namespace MovieLibrary.Controllers
         public async Task<IActionResult> Update(int? movieId)
         {
             if (movieId is null || movieId is 0)
-                return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullParameter });
 
             var movie = await MService.GetMovieById((int)movieId);
             var allmovieAwards = await MService.GetAwards();
@@ -186,7 +186,7 @@ namespace MovieLibrary.Controllers
             var allmovieActors = await MService.GetActors();
 
             if (movie is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullMovie);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullMovie });
 
             //Getting actors, producer and awards which are already in the movie
             var movieActors = await MService.GetActors(movie.Id);
@@ -215,7 +215,7 @@ namespace MovieLibrary.Controllers
             var movieToUpdate = await MService.GetMovieById(movie.Id);
 
             if (movieToUpdate is null || movie is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullMovie);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullMovie });
 
             if (movie.PosterFile is null)
                 movieToUpdate.PosterSource = movieToUpdate.PosterSource;
@@ -280,12 +280,12 @@ namespace MovieLibrary.Controllers
         public async Task<IActionResult> Delete(int? movieId)
         {
             if (movieId is null || movieId is 0)
-                return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullParameter });
 
             var movie = await MService.GetMovieById((int)movieId);
 
             if (movie is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullMovie);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullMovie });
 
             //Delete poster from files
             if (movie.PosterSource is not null)
@@ -306,12 +306,12 @@ namespace MovieLibrary.Controllers
         public async Task<IActionResult> DeleteComment(int? commentId)
         {
             if (commentId is null || commentId is 0)
-                return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullParameter });
 
             var comment = await MService.GetComment((int)commentId);
 
             if (comment is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullComment);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullComment });
 
             await MService.DeleteComment(comment);
 
@@ -326,7 +326,7 @@ namespace MovieLibrary.Controllers
             var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullUser });
 
             var movies = await MService.GetMovies(false);
 
@@ -337,12 +337,12 @@ namespace MovieLibrary.Controllers
         public async Task<IActionResult> Accept(int? movieId)
         {
             if (movieId is null || movieId is 0)
-                return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullParameter });
 
             var movie = await MService.GetMovieById((int)movieId);
 
             if (movie is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullMovie);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullMovie });
 
             movie.Accepted = true;
 
@@ -359,7 +359,7 @@ namespace MovieLibrary.Controllers
             var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullUser });
 
             var movies = await MService.GetUserFavorites(user.Id);
 
@@ -372,7 +372,7 @@ namespace MovieLibrary.Controllers
             var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullUser });
 
             var favouriteMovieToAdd = new Favourite()
             {
@@ -392,12 +392,12 @@ namespace MovieLibrary.Controllers
         public async Task<IActionResult> RemoveFavourite(int? movieId)
         {
             if (movieId is null || movieId is 0)
-                return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullParameter });
 
             var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullUser });
 
             await MService.RemoveFavourite((int)movieId, user.Id);
 
@@ -412,8 +412,7 @@ namespace MovieLibrary.Controllers
             var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
-
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullUser });
             var movies = await MService.GetBucketMovies(GetUserId());
 
             return View(movies);
@@ -425,7 +424,7 @@ namespace MovieLibrary.Controllers
             var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullUser });
 
             var bucketListToAdd = new BucketList()
             {
@@ -445,12 +444,12 @@ namespace MovieLibrary.Controllers
         public async Task<IActionResult> RemoveMovieFromBucketList(int? movieId)
         {
             if (movieId is null || movieId is 0)
-                return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullParameter });
 
             var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullUser });
 
             await MService.RemoveBucketListMovie((int)movieId, user.Id);
 
@@ -463,12 +462,12 @@ namespace MovieLibrary.Controllers
         public async Task<IActionResult> Comment(MovieDetailsViewModel? model)
         {
             if (model is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullParameter });
 
             var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullUser });
 
             if (string.IsNullOrEmpty(model.Comment))
                 return RedirectToAction("MovieDetails", new { movieId = model.Id });
@@ -492,12 +491,12 @@ namespace MovieLibrary.Controllers
         public async Task<IActionResult> Rate(int? movieId, int? rate)
         {
             if ((movieId is null or 0) || (rate is null or 0))
-                return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullParameter });
 
             var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullUser });
 
             await MService.RateMovie(movieId, rate);
 
@@ -511,7 +510,7 @@ namespace MovieLibrary.Controllers
             var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullUser });
 
             if (viewCaller is "AllMovies")
             {
@@ -540,7 +539,7 @@ namespace MovieLibrary.Controllers
                 return View("Favourite", movies);
             }
 
-            return RedirectToAction("Error", "Error", ErrorCode.NoSuchParameter, "ERROR: NO SUCH VIEW FOR THE SEARCH FUNC");
+            return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NoSuchParameter, ErrorMessage = "ERROR: NO SUCH VIEW FOR THE SEARCH FUNC" });
         }
         #endregion
 

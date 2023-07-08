@@ -38,7 +38,7 @@ namespace MovieLibrary.Controllers
             var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullUser });
 
             var (comments, createdMovies) = await AService.GetProfileInfo(user.Id);
 
@@ -74,7 +74,7 @@ namespace MovieLibrary.Controllers
             var user = await MService.GetUserById(userId);
 
             if (user is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullUser });
 
             user = await AService.SetUserRole(user);
 
@@ -91,7 +91,7 @@ namespace MovieLibrary.Controllers
                 var userDbValue = await MService.GetUserById(user.Id);
 
                 if (userDbValue is null)
-                    return RedirectToAction("Error", "Error", ErrorCode.NullUser);
+                    return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullUser });
 
                 var userRole = await AService.GetUserRole(userDbValue.Id);
 
@@ -124,7 +124,7 @@ namespace MovieLibrary.Controllers
             var user = await MService.GetUserById(userId);
 
             if (user is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullUser });
 
             await AService.DeleteUser(user);
 
@@ -291,7 +291,7 @@ namespace MovieLibrary.Controllers
                 var info = await signInManager.GetExternalLoginInfoAsync();
 
                 if (info is null)
-                    return RedirectToAction("Error", "Error", ErrorCode.NullExternalLoginInfo);
+                    return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullExternalLoginInfo });
 
                 var user = new AppUser
                 {
@@ -412,7 +412,7 @@ namespace MovieLibrary.Controllers
             var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullUser });
 
             var users = await AService.GetSearchedUsers(data);
             return View("UsersList", users);
@@ -428,10 +428,10 @@ namespace MovieLibrary.Controllers
             var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullUser });
 
             if (model is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullParameter });
 
             if (model.NewProfilePicture is null)
             {
@@ -470,10 +470,10 @@ namespace MovieLibrary.Controllers
             var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullUser });
 
             if (model is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullParameter });
 
             var result = await userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
 

@@ -38,10 +38,10 @@ namespace MovieLibrary.Controllers
             var user = await MService.GetUserById(GetUserId());
 
             if (user is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullUser);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullUser });
 
             if (model is null)
-                return RedirectToAction("Error", "Error", ErrorCode.NullParameter);
+                return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullParameter });
 
             var newActor = new Actor()
             {

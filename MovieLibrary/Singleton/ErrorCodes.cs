@@ -25,4 +25,10 @@
             [(int)ErrorCode.NullExternalLoginInfo] = "Null exception after getting the info from GetExternalLoginInfo()",
         };
     }
+
+    public class ErrorModel
+    {
+        public int ErrorCode { get; set; }
+        public string? ErrorMessage { get; set; }
+    }
 }

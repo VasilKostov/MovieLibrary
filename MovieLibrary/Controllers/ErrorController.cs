@@ -8,30 +8,20 @@ namespace MovieLibrary.Controllers
 {
     public class ErrorController : Controller
     {
-        public IActionResult Error(int errorCode)
+        public IActionResult Error(ErrorModel error)
         {
-            ErrorCodes.Messages.TryGetValue(errorCode, out var message);
+            ErrorCodes.Messages.TryGetValue(error.ErrorCode, out var message);
 
             var errorViewModel = new ErrorViewModel
             {
                 RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
-                ErrorCode = errorCode,
-                ErrorMessage = message ?? "ERROR: UNPARSABLE ERROR"
+                ErrorCode = error.ErrorCode
             };
 
-            return View(errorViewModel);
-        }
-
-        public IActionResult Error(int errorCode, string errorMessage)
-        {
-            ErrorCodes.Messages.TryGetValue(errorCode, out var _);
-
-            var errorViewModel = new ErrorViewModel
-            {
-                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
-                ErrorCode = errorCode,
-                ErrorMessage = errorMessage ?? "ERROR: UNPARSABLE ERROR"
-            };
+            if (!string.IsNullOrEmpty(error.ErrorMessage))
+                errorViewModel.ErrorMessage = error.ErrorMessage ?? "ERROR: UNPARSABLE ERROR";
+            else
+                errorViewModel.ErrorMessage = message ?? "ERROR: UNPARSABLE ERROR";
 
             return View(errorViewModel);
         }
