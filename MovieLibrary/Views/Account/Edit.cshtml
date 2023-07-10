@@ -1,36 +1,43 @@
 ﻿@model AppUser
-<h1 class="text-info">Edit User</h1>
 
-<div class="row">
-    <div class="col-md-8">
-        <form method="post" asp-action="Edit">
-            <input asp-for="@Model.Id" hidden />
-            <input asp-for="@Model.FirstName" hidden />
-            <input asp-for="@Model.LastName" hidden />
-            <hr />
-            <div asp-validation-summary="All" class="text-danger"></div>
+<header>
+    <h1 class="text-primary">Edit User</h1>
+</header>
 
-            <div class="form-group">
-                <label asp-for="UserName"></label>
-                <input asp-for="UserName" readonly class="form-control" />
-                <span asp-validation-for="UserName" class="text-danger"></span>
-            </div>
+<hr />
 
-            <div class="form-group">
-                <label asp-for="Email"></label>
-                <input asp-for="Email" readonly class="form-control" />
-                <input asp-for="Email" hidden />
-            </div>
-            <div class="form-group">
-                <label asp-for="RoleId"></label>
-                <select asp-for="RoleId" asp-items="@Model.RoleList" class="form-control">
-                    <option disabled selected>--Select Role--</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <button type="submit" class="btn btn-success">Update</button>
-                <a asp-action="UsersList" class="btn btn-warning" style="width:auto">Back to List</a>
-            </div>
-        </form>
+<body>
+    <div class="row">
+        <div class="col-md-8">
+            <form method="post" asp-action="Edit">
+                <input asp-for="@Model.Id" hidden />
+                <input asp-for="@Model.FirstName" hidden />
+                <input asp-for="@Model.LastName" hidden />
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="UserName">Username</label>
+                    <input asp-for="UserName" readonly class="form-control" />
+                    <span asp-validation-for="UserName" class="text-danger"></span>
+                </div>
+                <br />
+                <div class="form-group">
+                    <label asp-for="Email"></label>
+                    <input asp-for="Email" readonly class="form-control" />
+                    <input asp-for="Email" hidden />
+                </div>
+                <br />
+                <div class="form-group">
+                    <label asp-for="RoleId">Role</label>
+                    <select asp-for="RoleId" asp-items="@Model.RoleList" class="form-control">
+                        <option disabled selected>--Select Role--</option>
+                    </select>
+                </div>
+                <br />
+                <div class="form-group">
+                    <button type="submit" class="btn btn-info">Update</button>
+                    <a asp-action="UsersList" class="btn btn-danger" style="width:auto;margin-left:10px">Back to List</a>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
+</body>

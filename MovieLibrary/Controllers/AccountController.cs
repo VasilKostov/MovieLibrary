@@ -185,7 +185,7 @@ namespace MovieLibrary.Controllers
         {
             await signInManager.SignOutAsync();
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Login");
         }
         #endregion
 
