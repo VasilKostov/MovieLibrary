@@ -7,6 +7,7 @@
 </header>
 
 <hr />
+
 <body>
     <div>
         <form asp-controller="Actor" asp-action="Create">
@@ -43,19 +44,10 @@
 
             <link href="~/multiselect/example-styles.css" rel="stylesheet" />
             <div class="container">
-                <div class="card">
-                    <div class="card-text text-center">
-                        <h1>Multi Dropdownlist for actor's awards</h1>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col">
-                                <select id="dropDownList-example" name="SelectedActorAwardsIds"
-                                        asp-items="@Model.AllActorAwards" multiple class="form-control"></select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <label>Choose actor's award</label>
+            </div>
+            <div class="card-body">
+                <select id="dropDownList-example" name="SelectedActorAwardsIds" asp-items="@Model.AllActorAwards" multiple class="form-control"></select>
             </div>
             <input type="submit" value="Save" class="btn btn-primary" />
             @section Scripts{
