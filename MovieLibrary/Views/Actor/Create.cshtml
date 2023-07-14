@@ -44,11 +44,13 @@
 
             <link href="~/multiselect/example-styles.css" rel="stylesheet" />
             <div class="container">
-                <label>Choose actor's award</label>
+                <h5>Choose actor's award</h5>
+                <p>If you want to choose more than one press Ctrl and click on the wanted Awards</p>
             </div>
             <div class="card-body">
                 <select id="dropDownList-example" name="SelectedActorAwardsIds" asp-items="@Model.AllActorAwards" multiple class="form-control"></select>
             </div>
+            <br />
             <input type="submit" value="Save" class="btn btn-primary" />
             @section Scripts{
                 <script src="~/multiselect/jquery.multi-select.js"></script>
