@@ -7,6 +7,7 @@ using MovieLibrary.Models.Actors;
 using MovieLibrary.Models.Relations;
 using MovieLibrary.Services;
 using MovieLibrary.Singleton;
+using MovieLibrary.ViewModels;
 using MovieLibrary.ViewModels.ActorViewModels;
 
 namespace MovieLibrary.Controllers
@@ -27,7 +28,7 @@ namespace MovieLibrary.Controllers
 
             var actorAwards = await MService.GetActorAwards();
 
-            model.AllActorAwards = new SelectList(actorAwards, "Id", "Name");
+            model.AllActorAwards = new SelectList(actorAwards, "Id", "Name").ToList();
 
             return View(model);
         }
@@ -42,19 +43,28 @@ namespace MovieLibrary.Controllers
 
             if (model is null)
                 return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullParameter });
-
-            var newActor = new Actor()
+            
+            if (ModelState.IsValid)
             {
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                Gender = model.Gender,
-                AppUserId = user.Id,
-            };
+                var newActor = new Actor()
+                {
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Gender = model.Gender,
+                    AppUserId = user.Id,
+                };
 
-            await MService.CreateActor(newActor);
-            await MService.AddActorAwards(model.SelectedActorAwardsIds, newActor);
+                await MService.CreateActor(newActor);
+                await MService.AddActorAwards(model.SelectedActorAwardsIds, newActor);
 
-            return RedirectToAction("Create");
+                return RedirectToAction("Create");
+            }
+
+            var actorAwards = await MService.GetActorAwards();
+
+            model.AllActorAwards = new SelectList(actorAwards, "Id", "Name").ToList();
+            
+            return View(model);
         }
         #endregion
     }
