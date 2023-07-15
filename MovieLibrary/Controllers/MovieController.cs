@@ -67,6 +67,8 @@ namespace MovieLibrary.Controllers
                 return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullMovie });
 
             var comments = await MService.GetCommentByMovieId(movie.Id);
+            var awards = await MService.GetAwards(movie.Id);
+            var actors = await MService.GetActors(movie.Id);
 
             var model = new MovieDetailsViewModel()
             {
@@ -81,7 +83,9 @@ namespace MovieLibrary.Controllers
                 Comments = comments,
                 Accepted = movie.Accepted,
                 MinimumAge = movie.MinimumAge,
-                YoutubeTrailerId = movie.TrailerUrl!
+                YoutubeTrailerId = movie.TrailerUrl!,
+                Actors = actors,
+                Awards = awards,
             };
 
             return View(model);

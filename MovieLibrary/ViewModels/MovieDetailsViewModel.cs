@@ -1,4 +1,5 @@
-﻿using MovieLibrary.Models.Movies;
+﻿using MovieLibrary.Models.Actors;
+using MovieLibrary.Models.Movies;
 
 namespace MovieLibrary.ViewModels
 {
@@ -15,6 +16,8 @@ namespace MovieLibrary.ViewModels
         public string PosterSource { get; set; } = string.Empty;
         public bool Accepted { get; set; }
         public string YoutubeTrailerId { get; set; } = string.Empty;
+        public List<Actor> Actors { get; set; } = new List<Actor>();
+        public List<MovieAward>? Awards { get; set; } = new List<MovieAward>();
 
         public string? Comment { get; set; }
         public List<MovieComment>? Comments { get; set; }
