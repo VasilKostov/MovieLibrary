@@ -128,51 +128,64 @@ namespace MovieLibrary.Controllers
             if (user is null)
                 return RedirectToAction("Error", "Error", new ErrorModel { ErrorCode = (int)ErrorCode.NullUser });
 
-            var newMovie = new Movie()
+            if (ModelState.IsValid)
             {
-                Title = model.Title,
-                Budget = model.Budget,
-                ReleaseDate = model.ReleaseDate,
-                MinimumAge = model.MinimumAge,
-                Description = model.Description,
-                Category = model.Category,
-                AppUserId = user.Id,
-                ProducerId = model.ProducerId,
-                AppUserEmail = user.Email,
-                PosterFile = model.Poster,
-                Accepted = false,
-                TrailerUrl = GetIdFromYoutubeUrl(model.YoutubeUrl)
-            };
-
-            if (model.Poster is null)
-            {
-                ModelState.AddModelError(string.Empty, "Please upload a file.");
-                throw new Exception("Please upload a file.");
-            }
-            else if (model.Poster.Length > 0 && model.Poster is not null)
-            {
-                var path = Path.Combine(_webHostEnvironment.WebRootPath, "images/posters", model.Poster.FileName);
-
-                using (var memoryStream = new MemoryStream())
+                var newMovie = new Movie()
                 {
-                    await model.Poster.CopyToAsync(memoryStream);
+                    Title = model.Title,
+                    Budget = model.Budget,
+                    ReleaseDate = model.ReleaseDate,
+                    MinimumAge = model.MinimumAge,
+                    Description = model.Description,
+                    Category = model.Category,
+                    AppUserId = user.Id,
+                    ProducerId = model.ProducerId,
+                    AppUserEmail = user.Email,
+                    PosterFile = model.Poster,
+                    Accepted = false,
+                    TrailerUrl = GetIdFromYoutubeUrl(model.YoutubeUrl)
+                };
 
-                    if (memoryStream.Length < 2097152)// Upload the file if less than 2 MB
-                        newMovie.PosterSource = ChangePicturePath(path);
-                    else
-                        ModelState.AddModelError(string.Empty, "The file is too large. It must be under 2 MB");
+                if (model.Poster is null)
+                {
+                    ModelState.AddModelError(string.Empty, "Please upload a file.");
+                    throw new Exception("Please upload a file.");
+                }
+                else if (model.Poster.Length > 0 && model.Poster is not null)
+                {
+                    var path = Path.Combine(_webHostEnvironment.WebRootPath, "images/posters", model.Poster.FileName);
+
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await model.Poster.CopyToAsync(memoryStream);
+
+                        if (memoryStream.Length < 2097152)// Upload the file if less than 2 MB
+                            newMovie.PosterSource = ChangePicturePath(path);
+                        else
+                            ModelState.AddModelError(string.Empty, "The file is too large. It must be under 2 MB");
+                    }
+
+                    using FileStream stream = new FileStream(path, FileMode.Create);
+                    await model.Poster.CopyToAsync(stream);
+                    stream.Close();
                 }
 
-                using FileStream stream = new FileStream(path, FileMode.Create);
-                await model.Poster.CopyToAsync(stream);
-                stream.Close();
+                await MService.CreateMovie(newMovie);
+                await MService.AddMovieAwards(model.SelectedMovieAwardsIds, newMovie.Id);
+                await MService.AddActors(model.SelectedMovieActorsIds, newMovie.Id);
+
+                return RedirectToAction("Create");
             }
 
-            await MService.CreateMovie(newMovie);
-            await MService.AddMovieAwards(model.SelectedMovieAwardsIds, newMovie.Id);
-            await MService.AddActors(model.SelectedMovieActorsIds, newMovie.Id);
+            var awards = await MService.GetAwards();
+            var producers = await MService.GetProducers();
+            var actors = await MService.GetActors();
 
-            return RedirectToAction("Create");
+            model.AllMovieAwards = new SelectList(awards, "Id", "Name").ToList();
+            model.AllProducers = new SelectList(producers, "Id", "Name").ToList();
+            model.AllMovieActors = new SelectList(actors, "Id", "FullName").ToList();
+
+            return View(model);
         }
         #endregion
 
@@ -274,6 +287,8 @@ namespace MovieLibrary.Controllers
                 await MService.RemoveMovieActors(movieToUpdate.Id);
                 await MService.AddActors(model.SelectedMovieAwardsIds!, movieToUpdate.Id);
             }
+
+            await MService.UpdateMovie(movieToUpdate);
 
             return RedirectToAction("MovieList");
         }

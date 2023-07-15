@@ -39,8 +39,6 @@ namespace MovieLibrary.Models.Movies
         public List<Favourite> Favourites { get; set; }
         public List<BucketList> BucketLists { get; set; }
 
-
-
         public int GetYear(DateTime releaseDate)
         {
             return releaseDate.Year;

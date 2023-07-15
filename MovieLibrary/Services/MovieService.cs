@@ -456,10 +456,10 @@ namespace MovieLibrary.Services
             if (string.IsNullOrEmpty(data))
                 return await GetMovies(false);
 
-            var movies = await(from m in db.Movies
-                               where !m.Accepted && (m.Title.Contains(data) || m.Producer.Name.Contains(data))
-                               orderby m.ReleaseDate
-                               select m)
+            var movies = await (from m in db.Movies
+                                where !m.Accepted && (m.Title.Contains(data) || m.Producer.Name.Contains(data))
+                                orderby m.ReleaseDate
+                                select m)
                                 .ToListAsync();
 
             return movies;
@@ -470,11 +470,11 @@ namespace MovieLibrary.Services
             if (string.IsNullOrEmpty(data))
                 return await GetBucketMovies(user.Id);
 
-            var movies = await(from m in db.Movies
-                               join bucket in db.BucketLists on m.Id equals bucket.MovieId
-                               where m.Accepted && bucket.AppUserId == user.Id &&(m.Title.Contains(data) || m.Producer.Name.Contains(data))
-                               orderby m.ReleaseDate
-                               select m)
+            var movies = await (from m in db.Movies
+                                join bucket in db.BucketLists on m.Id equals bucket.MovieId
+                                where m.Accepted && bucket.AppUserId == user.Id && (m.Title.Contains(data) || m.Producer.Name.Contains(data))
+                                orderby m.ReleaseDate
+                                select m)
                                 .ToListAsync();
 
             return movies;
@@ -485,14 +485,25 @@ namespace MovieLibrary.Services
             if (string.IsNullOrEmpty(data))
                 return await GetUserFavorites(user.Id);
 
-            var movies = await(from m in db.Movies
-                               join fav in db.Favourites on m.Id equals fav.MovieId
-                               where m.Accepted && fav.AppUserId == user.Id && (m.Title.Contains(data) || m.Producer.Name.Contains(data))
-                               orderby m.ReleaseDate
-                               select m)
+            var movies = await (from m in db.Movies
+                                join fav in db.Favourites on m.Id equals fav.MovieId
+                                where m.Accepted && fav.AppUserId == user.Id && (m.Title.Contains(data) || m.Producer.Name.Contains(data))
+                                orderby m.ReleaseDate
+                                select m)
                                 .ToListAsync();
 
             return movies;
+        }
+
+        /// <summary>
+        /// Updates all changed parameters of a movie
+        /// </summary>
+        public async Task UpdateMovie(Movie? movie)
+        {
+            if (movie is not null)
+                db.Update(movie);
+
+            await db.SaveChangesAsync();
         }
     }
 }

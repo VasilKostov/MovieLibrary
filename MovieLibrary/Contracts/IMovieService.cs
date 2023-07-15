@@ -57,6 +57,11 @@ namespace MovieLibrary.Contracts
         /// Updates the status of acceptance of a certain movie
         /// </summary>
         Task UpdateMovie(int movieId);
+
+        /// <summary>
+        /// Updates all changed parameters of a movie
+        /// </summary>
+        Task UpdateMovie(Movie? movie);
         Task<List<Favourite>?> GetFavorites(string userId);
         Task<List<Movie>?> GetUserFavorites(string userId);
         Task<bool> IsInFavourites(Favourite favourite);

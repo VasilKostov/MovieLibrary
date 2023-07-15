@@ -23,13 +23,19 @@
                 <option disabled selected value="">Choose actor's gender</option>
             </select>
             <br />
-            <link href="~/multiselect/example-styles.css" rel="stylesheet" />
-            <div class="container">
-                <h5>Choose actor's award</h5>
-                <p>If you want to choose more than one press Ctrl and click on the wanted Awards</p>
-            </div>
-            <div class="card-body">
-                <select id="dropDownList-example" name="SelectedActorAwardsIds" asp-items="@Model.AllActorAwards" multiple class="form-control"></select>
+            <p>If you want to choose more than one press Ctrl and click on the wanted Awards</p>
+            <br />
+            <div class="card">
+                <div class="card-text text-center">
+                    <h1>Choose Actors's awards</h1>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <select id="dropDownList-example" name="SelectedActorAwardsIds" asp-items="@Model.AllActorAwards" multiple class="form-control"></select>
+                        </div>
+                    </div>
+                </div>
             </div>
             <br />
             <input type="submit" value="Save" class="btn btn-primary" />

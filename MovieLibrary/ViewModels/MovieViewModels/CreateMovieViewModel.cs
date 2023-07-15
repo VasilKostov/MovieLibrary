@@ -19,7 +19,6 @@ namespace MovieLibrary.ViewModels.MovieViewModels
         public int Budget { get; set; }
 
         [Required(ErrorMessage = ("The release date field is required"))]
-        [RegularExpression("^(19[2-9]\\d|20[0-4]\\d|2050)-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])\\s([01]\\d|2[0-3]):[0-5]\\d$", ErrorMessage = "The date must be after 1920 and till 2050!")]
         [Display(Name = "Budget")]
         public DateTime ReleaseDate { get; set; }
 

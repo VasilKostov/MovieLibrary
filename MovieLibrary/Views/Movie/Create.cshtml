@@ -11,113 +11,67 @@
 <body>
     <div>
         <form asp-controller="Movie" asp-action="Create" method="post" role="form" enctype="multipart/form-data">
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Title" class="col-md-2"></label>
-                <div class="col-md-10">
-                    <input asp-for="Title" class="form-control" />
-                    <span asp-validation-for="Title" class="text-danger"></span>
-                </div>
-            </div>
+            <span asp-validation-for="Title" class="text-danger"></span>
+            <input asp-for="Title" autocomplete="off" type="text" class="form-control" placeholder="Title" />
             <br />
-            <div class="form-group">
-                <label asp-for="YoutubeUrl" class="col-md-2"></label>
-                <div class="col-md-10">
-                    <input asp-for="YoutubeUrl" class="form-control" />
-                    <span asp-validation-for="YoutubeUrl" class="text-danger"></span>
-                </div>
-            </div>
+            <span asp-validation-for="YoutubeUrl" class="text-danger"></span>
+            <input asp-for="YoutubeUrl" autocomplete="off" type="text" class="form-control" placeholder="Youtube Trailer" />
             <br />
-            <div class="form-group">
-                <label asp-for="Budget" class="col-md-2"></label>
-                <div class="col-md-10">
-                    <input asp-for="Budget" class="form-control" />
-                    <span asp-validation-for="Budget" class="text-danger"></span>
-                </div>
-            </div>
+            <span asp-validation-for="Budget" class="text-danger"></span>
+            <input asp-for="Budget" step="default" type="number" class="form-control" value=" " placeholder="Budget" />
             <br />
-            <div class="form-group">
-                <label asp-for="ReleaseDate" class="col-md-2"></label>
-                <div class="col-md-10">
-                    <input asp-for="ReleaseDate" class="form-control" />
-                    <span asp-validation-for="ReleaseDate" class="text-danger"></span>
-                </div>
-            </div>
-            <div class="form-group">
-                <label asp-for="MinimumAge" class="col-md-2"></label>
-                <div class="col-md-10">
-                    <input asp-for="MinimumAge" class="form-control" />
-                    <span asp-validation-for="MinimumAge" class="text-danger"></span>
-                </div>
-            </div>
+            <span asp-validation-for="ReleaseDate" class="text-danger"></span>
+            <input asp-for="ReleaseDate" class="form-control" value="1920-01-01" min="1920-01-01" max="2050-01-01" type="date"/>
             <br />
-            <div class="form-group">
-                <label asp-for="Description" class="col-md-2"></label>
-                <div class="col-md-10">
-                    <textarea asp-for="Description" class="form-control">Write a description of the movie.</textarea>
-                    <span asp-validation-for="Description" class="text-danger"></span>
+            <span asp-validation-for="MinimumAge" class="text-danger"></span>
+            <input asp-for="MinimumAge" min="12" max="150" step="default" type="number" class="form-control" value=" " placeholder="Minimum age" />
+            <br />
+            <span asp-validation-for="Description" class="text-danger"></span>
+            <textarea asp-for="Description" autocomplete="off" type="text" class="form-control" placeholder="Write a description of the movie."></textarea>
+            <br />
+            <span asp-validation-for="Category" class="text-danger"></span>
+            <select asp-for="Category" class=" form-control" asp-items="Html.GetEnumSelectList<MovieCategory>()">
+                <option disabled selected value="">Choose movie's genre</option>
+            </select>
+            <br />
+            <span asp-validation-for="ProducerId" class="text-danger"></span>
+            <select asp-for="ProducerId" asp-items="@Model.AllProducers" class="form-control">
+                <option disabled selected>Select Producer</option>
+            </select>
+            <br />
+            <p>If you want to choose more than one press Ctrl and click on the wanted Awards!</p>
+            <br />
+            <div class="card">
+                <div class="card-text text-center">
+                    <h1>Choose Movie's actors</h1>
                 </div>
-            </div>
-            <div class="form-group">
-                <label asp-for="Category" class="col-md-2"></label>
-                <select asp-for="Category" class=" form-control" asp-items="Html.GetEnumSelectList<MovieCategory>()">
-                    <option disabled selected value="">Choose movie's genre</option>
-                </select>
-                <span asp-validation-for="Category" class="text-danger"></span>
-            </div>
-            <br />
-            <div class="form-group">
-                <label asp-for="ProducerId"></label>
-                <select asp-for="ProducerId" asp-items="@Model.AllProducers" class="form-control">
-                    <option disabled selected>Select Producer</option>
-                </select>
-            </div>
-            <br />
-            <link href="~/multiselect/example-styles.css" rel="stylesheet" />
-            <div class="container">
-                <div class="card">
-                    <div class="card-text text-center">
-                        <h1>Multi Dropdownlist for actors</h1>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col">
-                                <select id="dropDownList-example" name="SelectedMovieActorsIds"
-                                        asp-items="@Model.AllMovieActors"
-                                        multiple class="form-control"></select>
-                            </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <select id="dropDownList-example" name="SelectedMovieActorsIds" asp-items="@Model.AllMovieActors" multiple class="form-control"></select>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="form-group">
-                @Html.LabelFor(x => Model.SelectedMovieAwardsIds, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-5">
-                    @Html.DropDownListFor(x => Model.SelectedMovieAwardsIds,
-                    new SelectList(Model.AllMovieAwards, "Value", "Text"), htmlAttributes: new { @class = "form-control", id = "Country",  multiple =
-                    "multiple" })
-                    @Html.ValidationMessageFor(x => x.SelectedMovieAwardsIds, "", new { @class = "text-danger" })
+            <br />
+            <div class="card">
+                <div class="card-text text-center">
+                    <h1>Choose Movie's awards</h1>
                 </div>
-            </div>
-            <div class="container">
-                <div class="card">
-                    <div class="card-text text-center">
-                        <h1>Multi Dropdownlist for awards</h1>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col">
-                                <select id="dropDownList-example" name="SelectedMovieAwardsIds"
-                                        asp-items="@Model.AllMovieAwards" multiple class="form-control"></select>
-                            </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <select id="dropDownList-example" name="SelectedMovieAwardsIds" asp-items="@Model.AllMovieAwards" multiple class="form-control"></select>
                         </div>
                     </div>
                 </div>
             </div>
+            <br />
             <div>
                 <p>Choose a poster for the movie</p>
                 <input asp-for="Poster" type="file" class="form-control">
             </div>
+            <br />
             <input type="submit" value="Save" class="btn btn-primary" />
 
             @section Scripts{
@@ -127,7 +81,6 @@
                         $('#dropDownList-example').multiSelect();
                     });
                 </script>
-
             }
         </form>
     </div>

@@ -47,7 +47,6 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\images\posters\" />
-    <Folder Include="wwwroot\images\viewImages\" />
   </ItemGroup>
 
 </Project>
