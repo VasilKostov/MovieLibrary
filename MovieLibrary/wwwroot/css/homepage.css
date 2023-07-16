@@ -18,7 +18,7 @@
     height: auto;
     min-height: 35rem;
     padding: 0 0;
-    background: url("~/profilePictures/bg-masthead.png");
+    background: url("~/view/bg-masthead.png");
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: scroll;
@@ -31,9 +31,9 @@
         line-height: 2.5rem;
         letter-spacing: 0.8rem;
         background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0));
-        -webkit-text-fill-color: transparent;
+        -webkit-text-fill-color: transparent black;
         -webkit-background-clip: text;
-        background-clip: text;
+        color: black !important;
     }
 
     .masthead h2, .masthead .h2 {
@@ -45,6 +45,7 @@
     .masthead h1, .masthead .h1 {
         font-size: 4rem;
         line-height: 4rem;
+        color: black !important;
     }
 }
 
@@ -58,6 +59,7 @@
             font-size: 6.5rem;
             line-height: 6.5rem;
             letter-spacing: 0.8rem;
+            color: black !important;
         }
 
         .masthead h2, .masthead .h2 {

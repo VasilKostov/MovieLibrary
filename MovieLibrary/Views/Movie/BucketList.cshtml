@@ -1,32 +1,112 @@
-﻿@model List<MovieLibrary.Models.Movies.Movie>
-<form asp-action="Search" asp-route-viewCaller="Bucket">
-    <input type="text" name="data" placeholder="Search by Title/Producer" />
-    <button type="submit" class="btn-dark">
-        Search
-    </button>
-</form>
-@if (Model.Count > 0 && Model is not null)
-{
-    <div class="text-center">
-        <a asp-action="ConvertBucketListToPDf">Dowload your Bucketlist</a>
-    </div>
-    @foreach (var movie in Model)
-    {
-        <div class="container">
-            <img src="@movie.PosterSource" asp-append-version="true" />
-            @movie.Title
-            @movie.Category
-            @movie.ReleaseDate
-            @movie.MinimumAge
+﻿@using MovieLibrary.Models.Movies;
+@model List<Movie>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+
+<header>
+    <h1 class="text-primary">BucketList</h1>
+</header>
+
+<hr />
+<body>
+    <form asp-action="Search" asp-route-viewCaller="Bucket">
+        <div class="input-group">
+            <input type="search" class="form-control rounded" name="data" placeholder="Search movie by Title/Producer" aria-label="Search" aria-describedby="search-addon" />
+            <button type="submit" class="btn btn-outline-primary">Search</button>
         </div>
-        <form asp-action="RemoveMovieFromBucketList" asp-route-movieId="@movie.Id">
-            <button type="submit" onclick="return confirm('Are you sure you want to remove this movie from you bucketlist?')" class="btn btn-danger">
-                Remove
-            </button>
-        </form>
+    </form>
+
+    <br />
+
+    @if (Model.Count > 0 && Model is not null)
+    {
+        <div class="text-center" style="margin-bottom:20px">
+            <a asp-action="ConvertBucketListToPDf" class="Dbutton">Dowload your Bucketlist</a>
+        </div>
+
+        <table class="table table-bordered table-striped" style="width:100%">
+            <thead>
+                <tr>
+                    <th>
+                        Image
+                    </th>
+                    <th>
+                        Title
+                    </th>
+                    <th>
+                        Category
+                    </th>
+                    <th>
+                        Release Date
+                    </th>
+                    <th>
+                        Minimun Age
+                    </th>
+                    <th>
+                        Options
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var movie in Model)
+                {
+                    <tr height="200px">
+                        <td width="25%" height="200px">
+                            <img src="@movie.PosterSource" asp-append-version="true" class="profile" />
+                        </td>
+                        <td width="25%">
+                            @movie.Title
+                        </td>
+                        <td width="20%">
+                            @movie.Category
+                        </td>
+                        <td width="20%">
+                            @movie.ReleaseDate
+                        </td>
+                        <td width=25%>
+                            @movie.MinimumAge
+                        </td>
+                        <td width="25%">
+                            <form asp-action="RemoveMovieFromBucketList" asp-route-movieId="@movie.Id">
+                                <button type="submit" onclick="return confirm('Are you sure you want to remove this movie from you bucketlist?')" class="btn btn-danger">
+                                    Remove
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     }
-}
-else
-{
-    <h3>Nothing is added to your Bucketlist of movies you would want to watch in the future!</h3>
-}
+    else
+    {
+        <h3>Nothing is added to your Bucketlist of movies you would want to watch in the future!</h3>
+    }
+</body>
+
+<style>
+    .profile {
+        margin: 5px;
+        width: 250px;
+        height: 250px
+    }
+
+    .Dbutton {
+        border-radius: 20px;
+        border: 1px solid #FF4B2B;
+        background-color: #FF4B2B;
+        color: #FFFFFF;
+        font-size: 12px;
+        font-weight: bold;
+        padding: 12px 45px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        transition: transform 80ms ease-in;
+        text-decoration: none;
+    }
+
+        .Dbutton:hover {
+            color: #FFFFFF;
+            letter-spacing: 3px;
+        }
+</style>
