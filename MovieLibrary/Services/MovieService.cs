@@ -407,9 +407,8 @@ namespace MovieLibrary.Services
 
             if (movie == null) return;
 
-            movie.Rating = (movie.Rating + (int)rate) / (movie.UsersRated + 1);
+            movie.Rating = Math.Round((movie.Rating * movie.UsersRated + (int)rate) / (movie.UsersRated + 1), 2);
             movie.UsersRated += 1;
-
             db.Update(movie);
             await db.SaveChangesAsync();
         }

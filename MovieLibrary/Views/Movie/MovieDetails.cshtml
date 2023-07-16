@@ -19,6 +19,24 @@
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 </div>
 <h4>Rate the movie:</h4>
+<p>@Model.Rating/@Model.UsersRated</p>
+<form asp-action="Rate" method="post" asp-route-movieId="@Model.Id">
+    <div class="rating">
+        <input type="radio" id="star1" name="rate" value="1" />
+        <label for="star1"></label>
+        <input type="radio" id="star2" name="rate" value="2" />
+        <label for="star2"></label>
+        <input type="radio" id="star3" name="rate" value="3" />
+        <label for="star3"></label>
+        <input type="radio" id="star4" name="rate" value="4" />
+        <label for="star4"></label>
+        <input type="radio" id="star5" name="rate" value="5" />
+        <label for="star5"></label>
+    </div>
+    <input type="submit" value="Rate" />
+</form>
+
+
 <form asp-action="Comment">
     <input asp-for="@Model.Id" hidden />
     <input asp-for="@Model.Comments" hidden />
@@ -71,3 +89,25 @@
         </div>
     }
 }
+<style>
+    .rating {
+        direction: rtl;
+        display: inline-block;
+    }
+
+        .rating input {
+            display: none;
+        }
+
+        .rating label {
+            float: right;
+            width: 24px;
+            height: 24px;
+            background-image: url(star.png);
+            background-size: cover;
+        }
+
+        .rating input:checked + label {
+            background-image: url(star-filled.png);
+        }
+</style>
