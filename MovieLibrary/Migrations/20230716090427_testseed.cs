@@ -45,10 +45,7 @@ namespace MovieLibrary.Migrations
                 columns: new[] { "Id", "Accepted", "AppUserEmail", "AppUserId", "Budget", "Category", "Description", "MinimumAge", "PosterSource", "ProducerId", "Rating", "ReleaseDate", "Title", "TrailerUrl", "UsersRated" },
                 values: new object[] { 1, false, "admin@admin.bg", "02174cf0–9412–4cfe - afbf - 59f706d72cf6", 100000000, "Action", "Tyler Rake, a fearless black market mercenary, embarks on the most deadly extraction of his career when he's enlisted to rescue the kidnapped son of an imprisoned international crime lord.", 18, "~/images/posters/extraction2020.jpg", 1, 0.0, new DateTime(2022, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Extraction", "Y274jZs5s7s", 0 });
 
-            migrationBuilder.InsertData(
-                table: "MovieComments",
-                columns: new[] { "Id", "AppUserId", "MovieId", "PostedTime", "Text" },
-                values: new object[] { 1, "02174cf0–9412–4cfe - afbf - 59f706d72cf6", 1, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Probvam sys Seed" });
+
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -89,10 +86,6 @@ namespace MovieLibrary.Migrations
                 columns: new[] { "ConcurrencyStamp", "PasswordHash", "SecurityStamp" },
                 values: new object[] { "83bbe1d1-d6a1-487f-9e9b-1d3696310fd0", "AQAAAAEAACcQAAAAEAtUVID/dUY3RVaREgsostgru7LbAnaGop2Ab/p1C3xpxgbhxf0pd6kjgaoHq3ikxQ==", "1c021199-8926-4292-ab7e-53d0a7d5bb13" });
 
-            migrationBuilder.InsertData(
-                table: "MovieComments",
-                columns: new[] { "Id", "AppUserId", "MovieId", "PostedTime", "Text" },
-                values: new object[] { 4, "02174cf0–9412–4cfe - afbf - 59f706d72cf6", 1, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Probvam sys Seed" });
         }
     }
 }

@@ -34,10 +34,6 @@ namespace MovieLibrary.Migrations
                 columns: new[] { "ConcurrencyStamp", "PasswordHash", "SecurityStamp" },
                 values: new object[] { "7a3a03df-51a8-4087-8663-ab15bc5c2db4", "AQAAAAEAACcQAAAAEFYRv4lmkMAmSrYkiS9vy7rTPZX6tHW6JDt3BaLcR5yMRVAw2oARUaK53TcX11o+PA==", "a0ebac5a-7660-43de-b0f9-2717b7d44596" });
 
-            migrationBuilder.InsertData(
-                table: "MovieComments",
-                columns: new[] { "Id", "AppUserId", "MovieId", "Text" },
-                values: new object[] { 4, "02174cf0–9412–4cfe - afbf - 59f706d72cf6", 1, "Probvam sys Seed" });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

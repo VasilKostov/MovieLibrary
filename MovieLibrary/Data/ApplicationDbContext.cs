@@ -103,25 +103,10 @@ namespace MovieLibrary.Data
                 new ActorAward { Id = 5, Name = "Best Actor" });
 
             builder.Entity<Movie>().HasData(
-                new Movie
-                {
-                    Id = 1,
-                    Title = "Extraction",
-                    Budget = 100000000,
-                    ReleaseDate = new DateTime(2022, 1, 1),
-                    MinimumAge = 18,
-                    Rating = 0,
-                    UsersRated = 0,
-                    Description = "Tyler Rake, a fearless black market mercenary, embarks on the most deadly extraction of his career when he's enlisted to rescue the kidnapped son of an imprisoned international crime lord.",
-                    ProducerId = 1,
-                    Category = MovieCategory.Action,
-                    AppUserId = "02174cf0–9412–4cfe - afbf - 59f706d72cf6",
-                    AppUserEmail = "admin@admin.bg",
-                    PosterSource = "~/images/posters/extraction2020.jpg",
-                    Accepted = false,
-                    TrailerUrl = "Y274jZs5s7s"
-                }
+                new Movie { Id = 1, Title = "Extraction", Budget = 100000000, ReleaseDate = new DateTime(2020, 1, 1), MinimumAge = 18, Rating = 0, UsersRated = 0, Description = "Tyler Rake, a fearless black market mercenary, embarks on the most deadly extraction of his career when he's enlisted to rescue the kidnapped son of an imprisoned international crime lord.", ProducerId = 1, Category = MovieCategory.Action, AppUserId = "02174cf0–9412–4cfe - afbf - 59f706d72cf6", AppUserEmail = "admin@admin.bg", PosterSource = "~/images/posters/extraction2020.jpg", Accepted = true, TrailerUrl = "L6P3nI6VnlY" },
+                new Movie { Id = 2, Title = "Extraction 2", Budget = 300000000, ReleaseDate = new DateTime(2023, 1, 1), MinimumAge = 18, Rating = 0, UsersRated = 0, Description = "After barely surviving his grievous wounds from his mission in Dhaka, Bangladesh, Tyler Rake is back, and his team is ready to take on their next mission.", ProducerId = 1, Category = MovieCategory.Action, AppUserId = "02174cf0–9412–4cfe - afbf - 59f706d72cf6", AppUserEmail = "admin@admin.bg", PosterSource = "~/images/posters/extraction2023.jpg", Accepted = true, TrailerUrl = "Y274jZs5s7s" }
                 );
+
 
             builder.Entity<Movie>().Property(m => m.Category).HasConversion(c => c.ToString(), c => (MovieCategory)Enum.Parse(typeof(MovieCategory), c));
             builder.Entity<Actor>().Property(m => m.Gender).HasConversion(g => g.ToString(), g => (ActorGender)Enum.Parse(typeof(ActorGender), g));
@@ -149,7 +134,10 @@ namespace MovieLibrary.Data
             builder.Entity<Favourite>().HasOne(m => m.Movie).WithMany(am => am.Favourites);
             builder.Entity<Favourite>().HasOne(a => a.AppUser).WithMany(am => am.Favourites);
 
-            builder.Entity<MovieComment>().HasData(new MovieComment {Id = 1, MovieId = 1, AppUserId = "02174cf0–9412–4cfe - afbf - 59f706d72cf6", Text = "Probvam sys Seed" });
+            builder.Entity<MovieComment>().HasData(new MovieComment { Id = 1, MovieId = 1, AppUserId = "02174cf0–9412–4cfe - afbf - 59f706d72cf6", Text = "Very good movie!", PostedTime = DateTime.UtcNow });
+            builder.Entity<MovieComment>().HasData(new MovieComment { Id = 2, MovieId = 1, AppUserId = "02174cf0–9412–4cfe - afbf - 59f706d72cf6", Text = "I can agree too", PostedTime = DateTime.UtcNow });
+            builder.Entity<MovieComment>().HasData(new MovieComment { Id = 3, MovieId = 1, AppUserId = "02174cf0–9412–4cfe - afbf - 59f706d72cf6", Text = "I want to watch the next one", PostedTime = DateTime.UtcNow });
+
         }
     }
 }
